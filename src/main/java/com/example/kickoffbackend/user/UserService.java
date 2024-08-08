@@ -22,7 +22,7 @@ public class UserService {
     public void signUp(SignUpRequest request) {
 
         if(userRepository.existsByEmail(request.email())){
-            throw new ApiException(ErrorCode.EmailAlreadyRegisteredError);
+            throw new ApiException(ErrorCode.EMAIL_ALREADY_REGISTERED_ERROR);
         }
 
         User user = User.builder()
