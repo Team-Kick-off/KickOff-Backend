@@ -49,8 +49,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
 
-            log.info("messageBody = {}", messageBody);
-
             loginRequest = objectMapper.readValue(messageBody, LoginRequest.class);
 
         } catch (IOException e) {
