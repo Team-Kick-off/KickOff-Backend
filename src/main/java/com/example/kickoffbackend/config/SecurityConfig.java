@@ -1,5 +1,6 @@
 package com.example.kickoffbackend.config;
 
+import com.example.kickoffbackend.filter.JwtFilter;
 import com.example.kickoffbackend.filter.LoginFilter;
 import com.example.kickoffbackend.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/join", "/login").permitAll()
                 )
+                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), new ObjectMapper(), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
