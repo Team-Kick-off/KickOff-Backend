@@ -21,9 +21,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email).orElse(null);
 
         if(user != null){
-            return new UserPrincipal(user);
+            return new UserPrincipal(user.getEmail(), user.getPassword());
         }
-
         return null;
     }
 }
