@@ -1,5 +1,6 @@
 package com.example.kickoffbackend.auth.request;
 
+import com.example.kickoffbackend.user.domain.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ public record SignUpRequest(
          * 비밀번호에는 적어도 하나 이상의 특수 문자(@$!%*#?&)가 포함되어야 합니다.
          */
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$", message = "비밀번호 형식이 맞지 않습니다.")
+        @NotBlank(message = "비밀번호는 필수입니다.")
         String password,
 
         @NotBlank(message = "사용자 이름은 필수입니다.")
@@ -31,6 +33,9 @@ public record SignUpRequest(
         String nickname,
 
         @NotBlank(message = "사용자 생년월일은 필수입니다.")
-        String birth
+        String birth,
+
+        String address
 ) {
+
 }
