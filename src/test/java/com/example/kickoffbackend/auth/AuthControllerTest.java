@@ -5,6 +5,7 @@ import com.example.kickoffbackend.config.SecurityConfig;
 import com.example.kickoffbackend.exceptionHandler.ApiExceptionHandler;
 import com.example.kickoffbackend.exceptionHandler.GlobalExceptionHandler;
 import com.example.kickoffbackend.user.UserService;
+import com.example.kickoffbackend.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -36,6 +37,9 @@ class AuthControllerTest {
     private UserService userService;
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private JwtUtil jwtUtil;
 
     @Nested
     @DisplayName("회원가입 컨트롤러 테스트")
