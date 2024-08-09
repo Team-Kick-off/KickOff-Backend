@@ -3,7 +3,6 @@ package com.example.kickoffbackend.common;
 import com.example.kickoffbackend.common.error.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.ResponseEntity;
 
 @Getter
 public class CustomApi<T> {
@@ -52,6 +51,13 @@ public class CustomApi<T> {
         return CustomApi.builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
+                .build();
+    }
+
+    public static CustomApi ERROR(int code, String message) {
+        return CustomApi.builder()
+                .code(code)
+                .message(message)
                 .build();
     }
 }
