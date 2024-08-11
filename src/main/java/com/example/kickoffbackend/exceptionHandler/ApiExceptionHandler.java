@@ -16,7 +16,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(value = ApiException.class)
     public ResponseEntity<CustomApi> exception(ApiException e){
-        log.error("", e);
+        log.error("{}", e);
 
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity
