@@ -2,12 +2,18 @@ package com.example.kickoffbackend.common.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
 
-    INVALID_ACCOUNT_ERROR(400, 1400, "유효하지 않습니다.");
+
+    // User 관련 에러 코드는 1000번대 사용
+    EMAIL_ALREADY_REGISTERED_ERROR(HttpStatus.BAD_REQUEST.value(), 1400, "이미 가입된 이메일입니다."),
+    LOGIN_BAD_REQUEST_ERROR(HttpStatus.BAD_REQUEST.value(), 1401, "로그인 형식이 잘못됐습니다."),
+    FAILED_LOGIN_ERROR(HttpStatus.BAD_REQUEST.value(), 1402, "아이디 또는 비밀번호가 잘못됐습니다.");
+
 
     private int httpStatusCode;
     private int code;
