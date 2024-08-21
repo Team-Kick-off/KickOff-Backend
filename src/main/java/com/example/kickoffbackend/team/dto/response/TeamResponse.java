@@ -1,5 +1,8 @@
 package com.example.kickoffbackend.team.dto.response;
 
+import com.example.kickoffbackend.team.domain.Gender;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,13 +19,21 @@ public class TeamResponse {
 
     private String teamName;
 
-    private String introduction;
+    private String teamIntroduction;
 
-    private String rule;
+    private String teamRule;
 
-    private MultipartFile teamFile; // 파일 담는 용도
-    private String originalFileName; // 원본 파일 이름
-    private String storedFileName; // 저장된 파일 이름
-    private int fileAttached; // 파일 이름 여부(첨부 1, 미첨부 0)
+    private int fileAttached;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private String address;
+
+    private String teamLevel;
+
+    private String originalTeamImageName;
+
+    private String storedTeamImageName;
 
 }
