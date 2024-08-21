@@ -36,6 +36,8 @@ public class TeamService {
         Optional<User> result = userRepository.findByEmail(email);
         User user = result.orElseThrow();
 
+        duplicateCheckTeamName(teamCreateRequest.getTeamName());
+
         if(teamCreateRequest.getTeamFile() == null || teamCreateRequest.getTeamFile().isEmpty()){
             // 첨부 파일 없음
 
@@ -85,6 +87,13 @@ public class TeamService {
             teamMemberRepository.save(teamMember);
 
             return "파일 첨부 및 팀 생성이 설정되었습니다.";
+        }
+    }
+
+
+    private void duplicateCheckTeamName(String teamName){
+        if(teamRepository.findByTeamName(teamName).isPresent()){
+            throw new IllegalArgumentException("이미 존재하는 팀명입니다.");
         }
     }
 }
