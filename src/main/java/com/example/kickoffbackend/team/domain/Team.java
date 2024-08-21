@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "name", "introduction", "rule"})
+@ToString(of = {"id", "teamName", "introduction", "rule"})
 @Table(name = "teams")
 public class Team extends BaseEntity {
 
@@ -26,6 +26,19 @@ public class Team extends BaseEntity {
 
     private String rule;
 
+    private int fileAttached;
+
     @OneToMany(mappedBy = "team")
     private List<TeamMember> teams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<TeamImage> teamImages = new ArrayList<>();
+
+    @Builder
+    public Team(String teamName, String introduction, String rule, int fileAttached){
+        this.teamName = teamName;
+        this.introduction = introduction;
+        this.rule = rule;
+        this.fileAttached = fileAttached;
+    }
 }
