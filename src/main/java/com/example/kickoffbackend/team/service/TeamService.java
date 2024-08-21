@@ -36,6 +36,7 @@ public class TeamService {
         Optional<User> result = userRepository.findByEmail(email);
         User user = result.orElseThrow();
 
+        limitTeamCreate(user);
         duplicateCheckTeamName(teamCreateRequest.getTeamName());
 
         if(teamCreateRequest.getTeamFile() == null || teamCreateRequest.getTeamFile().isEmpty()){
@@ -87,6 +88,14 @@ public class TeamService {
             teamMemberRepository.save(teamMember);
 
             return "파일 첨부 및 팀 생성이 설정되었습니다.";
+        }
+    }
+
+    private void limitTeamCreate(User user){
+        int teamCount = (int) teamMemberRepository.countByUserId(user.getId());
+
+        if(teamCount >= 50){
+            throw new IllegalStateException("유저당 팀 생성은 3개까지 가능합니다.");
         }
     }
 

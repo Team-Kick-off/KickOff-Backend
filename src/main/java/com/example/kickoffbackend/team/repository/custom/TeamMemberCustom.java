@@ -5,4 +5,6 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface TeamMemberCustom {
 
+    long countByUserId(Long userId);
+
 }
