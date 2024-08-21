@@ -22,9 +22,15 @@ public class Team extends BaseEntity {
     @Column(length = 50, nullable = false)
     private String teamName;
 
-    private String introduction;
+    private String teamIntroduction;
 
-    private String rule;
+    private String teamRule;
+
+    private Gender gender;
+
+    private String address;
+
+    private String teamLevel;
 
     private int fileAttached;
 
@@ -35,10 +41,13 @@ public class Team extends BaseEntity {
     private List<TeamImage> teamImages = new ArrayList<>();
 
     @Builder
-    public Team(String teamName, String introduction, String rule, int fileAttached){
+    public Team(String teamName, String teamIntroduction, String teamRule, int fileAttached, String address, Gender gender, String teamLevel){
         this.teamName = teamName;
-        this.introduction = introduction;
-        this.rule = rule;
+        this.address = address;
+        this.teamLevel = teamLevel;
+        this.gender = gender;
+        this.teamIntroduction = teamIntroduction;
+        this.teamRule = teamRule;
         this.fileAttached = fileAttached;
     }
 }
