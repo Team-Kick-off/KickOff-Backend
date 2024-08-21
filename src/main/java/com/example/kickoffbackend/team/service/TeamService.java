@@ -1,5 +1,7 @@
 package com.example.kickoffbackend.team.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.kickoffbackend.team.domain.Role;
 import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.domain.TeamImage;
@@ -11,6 +13,8 @@ import com.example.kickoffbackend.team.repository.TeamRepository;
 import com.example.kickoffbackend.user.UserRepository;
 import com.example.kickoffbackend.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +27,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TeamService {
 
+    private final AmazonS3Client amazonS3Client;
+
     private final TeamRepository teamRepository;
 
     private final TeamImageRepository teamImageRepository;
@@ -30,6 +36,18 @@ public class TeamService {
     private final UserRepository userRepository;
 
     private final TeamMemberRepository teamMemberRepository;
+
+    @Autowired
+    public TeamService(AmazonS3Client amazonS3Client, TeamImageRepository teamImageRepository, TeamMemberRepository teamMemberRepository, TeamRepository teamRepository, UserRepository userRepository){
+        this.amazonS3Client = amazonS3Client;
+        this.teamImageRepository = teamImageRepository;
+        this.teamMemberRepository = teamMemberRepository;
+        this.teamRepository = teamRepository;
+        this.userRepository = userRepository;
+    }
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     public String create(TeamCreateRequest teamCreateRequest, String email) throws IOException {
 
@@ -70,8 +88,16 @@ public class TeamService {
             MultipartFile teamFile = teamCreateRequest.getTeamFile();
             String originalFileName = teamFile.getOriginalFilename();
             String storedFileName = UUID.randomUUID() + "_" + originalFileName;
-            String savePath = "/Users/baegseungchan/Desktop/imageTest/" + storedFileName;
-            teamFile.transferTo(new File(savePath)); // 파일 저장
+//            String savePath = "/Users/baegseungchan/Desktop/imageTest/" + storedFileName;
+//            teamFile.transferTo(new File(savePath)); // 파일 저장
+
+            // S3에 업로드 할 파일의 메타데이터 생성
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(teamFile.getContentType());
+            metadata.setContentLength(teamFile.getSize());
+
+            // S3에 업로드
+            amazonS3Client.putObject(bucket, storedFileName, teamFile.getInputStream(), metadata);
 
             Team teamEntity = teamRepository.toFileEntity(teamCreateRequest);
             Team team = teamRepository.save(teamEntity);
