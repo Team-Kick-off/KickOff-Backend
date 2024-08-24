@@ -5,8 +5,11 @@ import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
 import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import jakarta.transaction.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 public interface TeamCustom {
+    Optional<Team> findByName(String teamName);
 
     default Team toEntity(TeamCreateRequest request){
         return Team.builder()
@@ -52,4 +55,5 @@ public interface TeamCustom {
         }
         return teamResponse;
     }
+
 }
