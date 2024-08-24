@@ -37,3 +37,13 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         show_sql: true
+
+cloud:
+  aws:
+    s3:
+      bucket: kickoff-s3bucket
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      access-key: ${S3-ACCESS}
+      secret-key: ${S3-SECRET}
