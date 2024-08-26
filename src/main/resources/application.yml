@@ -38,6 +38,11 @@ spring:
         format_sql: true
         show_sql: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost # 43.202.239.80
+
 cloud:
   aws:
     s3:

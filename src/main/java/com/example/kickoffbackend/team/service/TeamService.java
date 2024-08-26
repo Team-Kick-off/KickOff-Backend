@@ -2,11 +2,14 @@ package com.example.kickoffbackend.team.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.example.kickoffbackend.common.error.ApiException;
+import com.example.kickoffbackend.common.error.ErrorCode;
 import com.example.kickoffbackend.team.domain.Role;
 import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.domain.TeamImage;
 import com.example.kickoffbackend.team.domain.TeamMember;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
+import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.repository.TeamImageRepository;
 import com.example.kickoffbackend.team.repository.TeamMemberRepository;
 import com.example.kickoffbackend.team.repository.TeamRepository;
@@ -20,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,7 +56,7 @@ public class TeamService {
     public String create(TeamCreateRequest teamCreateRequest, String email) throws IOException {
 
         Optional<User> result = userRepository.findByEmail(email);
-        User user = result.orElseThrow();
+        User user = result.orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
 
         limitTeamCreate(user);
         duplicateCheckTeamName(teamCreateRequest.getTeamName());
@@ -130,5 +134,19 @@ public class TeamService {
         if(teamRepository.findByTeamName(teamName).isPresent()){
             throw new IllegalArgumentException("이미 존재하는 팀명입니다.");
         }
+    }
+
+    public TeamResponse getTeamInfo(String teamName) {
+
+        Team team = teamRepository.findByTeamName(teamName)
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        String teamImageUrl = "";
+        if(!team.getTeamImages().isEmpty()){
+            URL url = amazonS3Client.getUrl(bucket, team.getTeamImages().get(0).getStoredName());
+            teamImageUrl = url.toString();
+        }
+
+        return new TeamResponse().toTeamInfoResponse(team, teamImageUrl);
     }
 }
