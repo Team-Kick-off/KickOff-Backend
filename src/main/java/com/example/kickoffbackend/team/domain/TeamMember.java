@@ -25,10 +25,16 @@ public class TeamMember extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String teamRequestContent;
+
+    private boolean teamRequestCheck;
+
     @Builder
-    public TeamMember(User user, Team team, Role role){
+    public TeamMember(User user, Team team, Role role, String teamRequestContent){
         this.role = role;
         this.user = user;
+        this.teamRequestContent = teamRequestContent;
+        this.teamRequestCheck = false;
         if(team != null){
             changeTeam(team);
         }

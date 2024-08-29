@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -148,5 +147,31 @@ public class TeamService {
         }
 
         return new TeamResponse().toTeamInfoResponse(team, teamImageUrl);
+    }
+
+    public String teamRegister(String teamName, String email, String teamRegisterRequest) {
+
+        Optional<User> userResult = userRepository.findByEmail(email);
+
+        User user = userResult.orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        Optional<Team> teamResult = teamRepository.findByTeamName(teamName);
+
+        Team team = teamResult.orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        if(teamMemberRepository.existsByUserIdAndTeam(user.getId(), teamName)){
+            throw new ApiException(ErrorCode.ALREADY_JOINED_TEAM_ERROR);
+        }
+
+        TeamMember teamMember = TeamMember.builder()
+                        .user(user)
+                        .team(team)
+                        .teamRequestContent(teamRegisterRequest)
+                        .role(Role.MEMBER)
+                        .build();
+
+        teamMemberRepository.save(teamMember);
+
+        return  "팀 가입이 완료되었습니다.";
     }
 }
