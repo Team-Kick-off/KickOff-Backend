@@ -3,7 +3,10 @@ package com.example.kickoffbackend.team.controller;
 import com.example.kickoffbackend.common.CustomApi;
 import com.example.kickoffbackend.common.error.ErrorCode;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
+import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
 import com.example.kickoffbackend.team.dto.request.TeamRegisterRequest;
+import com.example.kickoffbackend.team.dto.response.TeamFilterResponse;
+import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/teams")
@@ -52,4 +56,8 @@ public class TeamController {
         return CustomApi.OK(teamService.teamRegister(teamName, email, teamRequestContent));
     }
 
+    @PostMapping("/filter")
+    public CustomApi<List<TeamFilterResponse>> findByTeamFilter(@RequestBody TeamFilterRequest teamFilterRequest){
+        return CustomApi.OK(teamService.findTeamFilter(teamFilterRequest));
+    }
 }
