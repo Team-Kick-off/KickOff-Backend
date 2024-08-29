@@ -3,6 +3,7 @@ package com.example.kickoffbackend.team.controller;
 import com.example.kickoffbackend.common.CustomApi;
 import com.example.kickoffbackend.common.error.ErrorCode;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
+import com.example.kickoffbackend.team.dto.request.TeamRegisterRequest;
 import com.example.kickoffbackend.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,4 +36,20 @@ public class TeamController {
     public CustomApi getTeamInfo(@PathVariable("teamName") String teamName){
         return CustomApi.OK(teamService.getTeamInfo(teamName), "팀 조회가 완료되었습니다.");
     }
+
+    @PostMapping("/{teamName}/members")
+    public CustomApi registerTeamMember(@PathVariable("teamName") String teamName,
+                                        @RequestBody TeamRegisterRequest teamRegisterRequest,
+                                        @AuthenticationPrincipal UserDetails userDetails){
+
+        if(userDetails == null){
+            return CustomApi.ERROR(ErrorCode.USER_NOT_FOUND_ERROR);
+        }
+
+        String email = userDetails.getUsername();
+        String teamRequestContent = teamRegisterRequest.getTeamRequestContent();
+
+        return CustomApi.OK(teamService.teamRegister(teamName, email, teamRequestContent));
+    }
+
 }

@@ -7,4 +7,6 @@ public interface TeamMemberCustom {
 
     long countByUserId(Long userId);
 
+    boolean  existsByUserIdAndTeam(Long userId, String teamName);
+
 }

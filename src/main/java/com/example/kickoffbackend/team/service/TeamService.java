@@ -9,6 +9,7 @@ import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.domain.TeamImage;
 import com.example.kickoffbackend.team.domain.TeamMember;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
+import com.example.kickoffbackend.team.dto.response.TeamMemberResponse;
 import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.repository.TeamImageRepository;
 import com.example.kickoffbackend.team.repository.TeamMemberRepository;
@@ -21,11 +22,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -138,7 +141,7 @@ public class TeamService {
 
     public TeamResponse getTeamInfo(String teamName) {
 
-        Team team = teamRepository.findByTeamName(teamName)
+        Team team = teamRepository.findByName(teamName)
                 .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
 
         String teamImageUrl = "";
@@ -147,6 +150,38 @@ public class TeamService {
             teamImageUrl = url.toString();
         }
 
-        return new TeamResponse().toTeamInfoResponse(team, teamImageUrl);
+        Set<TeamMember> members = team.getTeamMembers();
+
+        List<TeamMemberResponse> teamMemberResponses = members.stream()
+                .map(teamMember -> new TeamMemberResponse(teamMember.getUser().getName(), teamMember.getRole()))
+                .collect(Collectors.toList());
+
+        return new TeamResponse().toTeamInfoResponse(team, teamImageUrl, teamMemberResponses);
+    }
+
+    public String teamRegister(String teamName, String email, String teamRegisterRequest) {
+
+        Optional<User> userResult = userRepository.findByEmail(email);
+
+        User user = userResult.orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        Optional<Team> teamResult = teamRepository.findByTeamName(teamName);
+
+        Team team = teamResult.orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        if(teamMemberRepository.existsByUserIdAndTeam(user.getId(), teamName)){
+            throw new ApiException(ErrorCode.ALREADY_JOINED_TEAM_ERROR);
+        }
+
+        TeamMember teamMember = TeamMember.builder()
+                        .user(user)
+                        .team(team)
+                        .teamRequestContent(teamRegisterRequest)
+                        .role(Role.MEMBER)
+                        .build();
+
+        teamMemberRepository.save(teamMember);
+
+        return  "팀 가입이 완료되었습니다.";
     }
 }
