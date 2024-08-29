@@ -10,6 +10,8 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // CORS 설정 적용할 API URI
                 .allowedOrigins("http://localhost:3000") // 적용할 출처
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
                 .allowCredentials(true); // 인증 요청 허용
     }
 }
