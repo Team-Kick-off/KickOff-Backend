@@ -9,6 +9,8 @@ import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.domain.TeamImage;
 import com.example.kickoffbackend.team.domain.TeamMember;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
+import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
+import com.example.kickoffbackend.team.dto.response.TeamFilterResponse;
 import com.example.kickoffbackend.team.dto.response.TeamMemberResponse;
 import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.repository.TeamImageRepository;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TeamService {
 
     private final AmazonS3Client amazonS3Client;
@@ -183,5 +187,23 @@ public class TeamService {
         teamMemberRepository.save(teamMember);
 
         return  "팀 가입이 완료되었습니다.";
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<TeamFilterResponse> findTeamFilter(TeamFilterRequest teamFilterRequest){
+
+        List<Team> teams =  teamRepository.findByTeamFilter(teamFilterRequest);
+
+        return teams.stream()
+                .map(team -> {
+                    String teamImageUrl = "";
+                    if (!team.getTeamImages().isEmpty()) {
+                        URL url = amazonS3Client.getUrl(bucket, team.getTeamImages().get(0).getStoredName());
+                        teamImageUrl = url.toString();
+                    }
+                    return new TeamFilterResponse().toTeamFilterResponse(team, teamImageUrl);
+                })
+                .collect(Collectors.toList());
     }
 }
