@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "teamName", "introduction", "rule"})
+@ToString(of = {"id", "teamName", "teamIntroduction", "teamRule"})
 @Table(name = "teams")
 public class Team extends BaseEntity {
 
@@ -35,7 +37,7 @@ public class Team extends BaseEntity {
     private int fileAttached;
 
     @OneToMany(mappedBy = "team")
-    private List<TeamMember> teams = new ArrayList<>();
+    private Set<TeamMember> teamMembers = new HashSet<>();
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<TeamImage> teamImages = new ArrayList<>();

@@ -28,6 +28,7 @@ public class TeamCustomImpl implements TeamCustom {
         Team result = queryFactory
                 .selectFrom(team)
                 .leftJoin(team.teamImages, teamImage).fetchJoin()
+                .leftJoin(team.teamMembers, teamMember)
                 .where(team.teamName.eq(teamName))
                 .fetchOne();
 
