@@ -23,4 +23,12 @@ public class TeamMemberCustomImpl implements TeamMemberCustom {
                 .where(teamMember.user.id.eq(userId))
                 .fetchOne();
     }
+
+    @Override
+    public boolean existsByUserIdAndTeam(Long userId, String teamName) {
+        return queryFactory
+                .select().from(teamMember)
+                .where(teamMember.user.id.eq(userId).and(teamMember.team.teamName.eq(teamName)))
+                .fetchCount() > 0;
+    }
 }

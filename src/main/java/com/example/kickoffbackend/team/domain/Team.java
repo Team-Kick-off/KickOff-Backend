@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "teamName", "introduction", "rule"})
+@ToString(of = {"id", "teamName", "teamIntroduction", "teamRule"})
 @Table(name = "teams")
 public class Team extends BaseEntity {
 
