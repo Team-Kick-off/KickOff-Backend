@@ -41,7 +41,7 @@ spring:
   data:
     redis:
       port: 6379
-      host: localhost # 43.202.239.80
+      host: 43.202.239.80
 
 cloud:
   aws:
