@@ -2,14 +2,18 @@ package com.example.kickoffbackend.team.repository.custom;
 
 import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
+import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
 import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
 public interface TeamCustom {
     Optional<Team> findByName(String teamName);
+
+    List<Team> findByTeamFilter(TeamFilterRequest teamFilterRequest);
 
     default Team toEntity(TeamCreateRequest request){
         return Team.builder()
