@@ -28,6 +28,7 @@ public class Team extends BaseEntity {
 
     private String teamRule;
 
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     private String address;
@@ -35,6 +36,9 @@ public class Team extends BaseEntity {
     private String teamLevel;
 
     private int fileAttached;
+
+    @Enumerated(EnumType.STRING)
+    private RecruitmentStatus status;
 
     @OneToMany(mappedBy = "team")
     private Set<TeamMember> teamMembers = new HashSet<>();
@@ -51,5 +55,6 @@ public class Team extends BaseEntity {
         this.teamIntroduction = teamIntroduction;
         this.teamRule = teamRule;
         this.fileAttached = fileAttached;
+        this.status = RecruitmentStatus.OPEN;
     }
 }
