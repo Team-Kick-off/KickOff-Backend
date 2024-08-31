@@ -206,4 +206,10 @@ public class TeamService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public boolean isTeamNameDuplicate(String teamName) {
+        Optional<Team> result = teamRepository.findByTeamName(teamName);
+
+        return result.isPresent();
+    }
 }
