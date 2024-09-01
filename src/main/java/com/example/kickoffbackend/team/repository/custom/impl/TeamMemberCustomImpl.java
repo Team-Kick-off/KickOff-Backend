@@ -1,12 +1,14 @@
 package com.example.kickoffbackend.team.repository.custom.impl;
 
-import com.example.kickoffbackend.team.domain.QTeamMember;
+import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.repository.custom.TeamMemberCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
+import java.util.List;
+
+import static com.example.kickoffbackend.team.domain.QTeam.team;
 import static com.example.kickoffbackend.team.domain.QTeamMember.*;
-import static com.querydsl.core.types.ExpressionUtils.count;
 
 public class TeamMemberCustomImpl implements TeamMemberCustom {
 
@@ -31,4 +33,14 @@ public class TeamMemberCustomImpl implements TeamMemberCustom {
                 .where(teamMember.user.id.eq(userId).and(teamMember.team.teamName.eq(teamName)))
                 .fetchCount() > 0;
     }
+
+    @Override
+    public List<Team> findByUserId(Long userId) {
+        return queryFactory.selectFrom(teamMember.team)
+                .join(teamMember.team, team).fetchJoin()
+                .where(teamMember.user.id.eq(userId))
+                .fetch();
+
+    }
+
 }
