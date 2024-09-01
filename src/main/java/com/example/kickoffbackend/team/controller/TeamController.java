@@ -60,4 +60,11 @@ public class TeamController {
     public CustomApi<List<TeamFilterResponse>> findByTeamFilter(@RequestBody TeamFilterRequest teamFilterRequest){
         return CustomApi.OK(teamService.findTeamFilter(teamFilterRequest));
     }
+
+    @GetMapping("/check-duplicate")
+    public CustomApi<Boolean> checkDuplicateTeamName(@RequestParam("teamName") String teamName) {
+        System.out.println("teamName : " + teamName);
+        boolean isDuplicate = teamService.isTeamNameDuplicate(teamName);
+        return CustomApi.OK(isDuplicate, isDuplicate ? "이미 존재하는 팀 이름입니다." : "사용 가능한 팀 이름입니다.");
+    }
 }
