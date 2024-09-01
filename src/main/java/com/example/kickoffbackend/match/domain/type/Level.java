@@ -1,10 +1,11 @@
-package com.example.kickoffbackend.match.domain;
+package com.example.kickoffbackend.match.domain.type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum Level {
     ROOKIE("루키"),       // 아직 풋살 경험이 적어 실력이 베일에 쌓여있어요
     STARTER("스타터"),     // 이제 풋살을 시작했어요

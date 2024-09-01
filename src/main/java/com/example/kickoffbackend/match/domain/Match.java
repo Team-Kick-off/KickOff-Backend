@@ -1,12 +1,16 @@
 package com.example.kickoffbackend.match.domain;
 
 import com.example.kickoffbackend.common.BaseEntity;
+import com.example.kickoffbackend.match.domain.type.Level;
+import com.example.kickoffbackend.match.domain.type.MatchStatus;
 import com.example.kickoffbackend.team.domain.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,28 +38,38 @@ public class Match extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MatchStatus status;    // 상태(모집중, 모집 완료, 경기중, 경기 완료)
+    private MatchStatus status;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "field_id")
-    private Field field;            // 경기장
+    @Column(nullable = false)
+    private String fieldName;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "compete_id")
-//    private CompeteTeam CompeteTeam;              // 경기 주최팀 / 상대팀 중간테이블
+    private String fieldAddress;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "competeTeam_id")
+    private CompeteTeam competeTeam; // 경기 주최팀 / 상대팀 중간테이블
+
+    @OneToMany(mappedBy = "match")
+    private List<AcceptCompete> acceptCompete;
+
+    @OneToMany(mappedBy = "match")
+    private List<HomeTeamMember> homeTeamMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "match")
+    private List<AwayTeamMember> awayTeamMembers = new ArrayList<>();
 
     @Builder(toBuilder = true)
-    public Match(LocalDate matchDate, LocalTime startTime, LocalTime endTime, Level level, Gender gender, MatchStatus status, Field field, CompeteTeam competeTeam) {
+    public Match(LocalDate matchDate, LocalTime startTime, LocalTime endTime, Level level, Gender gender, MatchStatus status, String fieldName, String fieldAddress, CompeteTeam competeTeam) {
         this.matchDate = matchDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.level = level;
         this.gender = gender;
-        this.status = status;
-        this.field = field;
-//        this.competeTeam = competeTeam;
+        this.status = MatchStatus.RECRUITING;
+        this.fieldName = fieldName;
+        this.fieldAddress = fieldAddress;
+        this.competeTeam = competeTeam;
     }
 
     public void updateEndTime(LocalTime endTime) {

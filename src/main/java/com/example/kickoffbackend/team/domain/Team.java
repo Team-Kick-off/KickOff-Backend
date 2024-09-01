@@ -1,6 +1,7 @@
 package com.example.kickoffbackend.team.domain;
 
 import com.example.kickoffbackend.common.BaseEntity;
+import com.example.kickoffbackend.match.domain.CompeteTeam;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,6 +46,9 @@ public class Team extends BaseEntity {
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<TeamImage> teamImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<CompeteTeam> competeTeams = new ArrayList<>();
 
     @Builder
     public Team(String teamName, String teamIntroduction, String teamRule, int fileAttached, String address, Gender gender, String teamLevel){
