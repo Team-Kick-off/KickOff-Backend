@@ -13,6 +13,7 @@ import java.util.Optional;
 import static com.example.kickoffbackend.team.domain.QTeam.*;
 import static com.example.kickoffbackend.team.domain.QTeamImage.teamImage;
 import static com.example.kickoffbackend.team.domain.QTeamMember.teamMember;
+import static com.example.kickoffbackend.team.domain.RecruitmentStatus.*;
 import static org.springframework.util.StringUtils.isEmpty;
 
 public class TeamCustomImpl implements TeamCustom {
@@ -38,13 +39,14 @@ public class TeamCustomImpl implements TeamCustom {
 
     @Override
     public List<Team> findByTeamFilter(TeamFilterRequest teamFilterRequest) {
+
+        BooleanExpression expression = statusEq(teamFilterRequest.getStatus())
+                .and(addressEq(teamFilterRequest.getAddress()))
+                .and(genderEq(teamFilterRequest.getGender()));
+
+
         return queryFactory.selectFrom(team)
-                .where(
-                        addressEq(teamFilterRequest.getAddress()),
-                        genderEq(teamFilterRequest.getGender()),
-                        statusEq(teamFilterRequest.getStatus())
-                )
-                .where()
+                .where(expression)
                 .fetch();
     }
 
@@ -57,6 +59,6 @@ public class TeamCustomImpl implements TeamCustom {
     }
 
     private BooleanExpression statusEq(RecruitmentStatus status) {
-        return isEmpty(status) ? null : team.status.eq(status);
+        return status.equals(OPEN) ? team.status.eq(status) : team.status.eq(CLOSED);
     }
 }

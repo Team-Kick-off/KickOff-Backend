@@ -1,6 +1,7 @@
 package com.example.kickoffbackend.team.dto.response;
 
 import com.example.kickoffbackend.team.domain.Gender;
+import com.example.kickoffbackend.team.domain.RecruitmentStatus;
 import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.domain.TeamMember;
 import jakarta.persistence.EnumType;
@@ -43,6 +44,8 @@ public class TeamResponse {
 
     private String teamImageUrl;
 
+    private RecruitmentStatus recruitmentStatus;
+
     private List<TeamMemberResponse> teamMembers;
 
 
@@ -52,6 +55,7 @@ public class TeamResponse {
                 .teamName(team.getTeamName())
                 .teamIntroduction(team.getTeamIntroduction())
                 .teamRule(team.getTeamRule())
+                .recruitmentStatus(team.getStatus())
                 .fileAttached(team.getFileAttached())
                 .gender(team.getGender())
                 .address(team.getAddress())
