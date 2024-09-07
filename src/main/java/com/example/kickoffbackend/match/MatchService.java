@@ -9,6 +9,7 @@ import com.example.kickoffbackend.match.domain.type.CompeteType;
 import com.example.kickoffbackend.match.dto.request.MatchCreateRequest;
 import com.example.kickoffbackend.match.dto.response.MatchResponse;
 import com.example.kickoffbackend.match.dto.response.TeamSimpleResponse;
+import com.example.kickoffbackend.match.repository.AcceptCompeteRepository;
 import com.example.kickoffbackend.match.repository.CompeteTeamRepository;
 import com.example.kickoffbackend.match.dto.response.TeamMemberSimpleResponse;
 import com.example.kickoffbackend.match.repository.MatchRepository;
