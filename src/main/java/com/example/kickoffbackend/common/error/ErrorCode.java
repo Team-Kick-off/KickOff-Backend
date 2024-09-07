@@ -19,8 +19,11 @@ public enum ErrorCode {
 
     // Team 관련 에러 코드는 2000번대 사용
     TEAM_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), 2401 , "팀이 존재하지 않습니다."),
-    ALREADY_JOINED_TEAM_ERROR(HttpStatus.BAD_REQUEST.value(),2402 , "팀에 가입된 유저입니다.");
+    ALREADY_JOINED_TEAM_ERROR(HttpStatus.BAD_REQUEST.value(),2402 , "팀에 가입된 유저입니다."),
 
+    // Match 관련 에러 코드는 3000번대 사용
+    MATCH_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), 3400, "경기가 존재하지 않습니다."),
+    FIELD_ALREADY_RESERVATION_ERROR(HttpStatus.BAD_REQUEST.value(), 3401, "이미 예약중인 경기장입니다.");
 
     private int httpStatusCode;
     private int code;

@@ -1,9 +1,13 @@
 package com.example.kickoffbackend.user.domain;
 
+import com.example.kickoffbackend.team.domain.TeamMember;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Table(name = "users")
@@ -36,6 +40,9 @@ public class User {
 
     @Column(length = 10)
     private String birth;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<TeamMember> teamMembers = new ArrayList<>();
 
     @Builder
     private User(String email, String password, String name, Sex sex, String nickname, String address, String birth) {
