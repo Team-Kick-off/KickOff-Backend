@@ -1,0 +1,54 @@
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    operations-sorter: alpha # alpha(???, ????), method(HTTP????)
+    tags-sorter: alpha # ?? ?? ??
+    path: /swagger-ui.html # html ?? ?? ??
+    disable-swagger-default-url: true
+    display-query-params-without-oauth2: true
+    doc-expansion: none # tag, operation ??? ??
+  paths-to-match:
+    - /**
+
+spring:
+  jwt:
+    secret: ${JWT-SECRET}
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:kickoff
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        show_sql: true
+
+  data:
+    redis:
+      port: 6379
+      host: 43.202.239.80
+
+cloud:
+  aws:
+    s3:
+      bucket: kickoff-s3bucket
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      access-key: ${S3-ACCESS}
+      secret-key: ${S3-SECRET}
