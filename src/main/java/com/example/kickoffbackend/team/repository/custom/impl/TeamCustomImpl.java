@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.example.kickoffbackend.team.domain.QTeam.*;
 import static com.example.kickoffbackend.team.domain.QTeamImage.teamImage;
@@ -60,5 +61,13 @@ public class TeamCustomImpl implements TeamCustom {
 
     private BooleanExpression statusEq(RecruitmentStatus status) {
         return status.equals(OPEN) ? team.status.eq(status) : team.status.eq(CLOSED);
+    }
+
+    @Override
+    public List<Team> findSearchByTeam(String teamName, String search) {
+        return queryFactory
+                .selectFrom(team)
+                .where(team.teamName.ne(teamName).and(team.teamName.contains(search)))
+                .fetch();
     }
 }

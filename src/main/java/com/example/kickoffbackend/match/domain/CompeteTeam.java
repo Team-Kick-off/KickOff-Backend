@@ -21,12 +21,17 @@ public class CompeteTeam {
     private CompeteType competeType;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "match_id")
+    private Match match;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
 
     @Builder
-    public CompeteTeam(CompeteType competeType, Team team) {
+    public CompeteTeam(CompeteType competeType, Match match, Team team) {
         this.competeType = competeType;
+        this.match = match;
         this.team = team;
     }
 }

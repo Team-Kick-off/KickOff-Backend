@@ -46,9 +46,8 @@ public class Match extends BaseEntity {
 
     private String fieldAddress;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "competeTeam_id")
-    private CompeteTeam competeTeam; // 경기 주최팀 / 상대팀 중간테이블
+    @OneToMany(mappedBy = "match")
+    private List<CompeteTeam> competeTeam; // 경기 주최팀 / 상대팀 중간테이블
 
     @OneToMany(mappedBy = "match")
     private List<AcceptCompete> acceptCompete;
@@ -60,7 +59,7 @@ public class Match extends BaseEntity {
     private List<AwayTeamMember> awayTeamMembers = new ArrayList<>();
 
     @Builder(toBuilder = true)
-    public Match(LocalDate matchDate, LocalTime startTime, LocalTime endTime, Level level, Gender gender, MatchStatus status, String fieldName, String fieldAddress, CompeteTeam competeTeam) {
+    public Match(LocalDate matchDate, LocalTime startTime, LocalTime endTime, Level level, Gender gender, MatchStatus status, String fieldName, String fieldAddress) {
         this.matchDate = matchDate;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -69,7 +68,6 @@ public class Match extends BaseEntity {
         this.status = MatchStatus.RECRUITING;
         this.fieldName = fieldName;
         this.fieldAddress = fieldAddress;
-        this.competeTeam = competeTeam;
     }
 
     public void updateEndTime(LocalTime endTime) {

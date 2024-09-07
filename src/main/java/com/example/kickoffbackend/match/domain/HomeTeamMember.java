@@ -16,8 +16,6 @@ public class HomeTeamMember {
     @Id @GeneratedValue
     private Long id;
 
-    private Position position;
-
     private String nickname;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,8 +23,7 @@ public class HomeTeamMember {
     private Match match;
 
     @Builder(toBuilder = true)
-    private HomeTeamMember(Position position, String nickname, Match match) {
-        this.position = position;
+    private HomeTeamMember(String nickname, Match match) {
         this.nickname = nickname;
         this.match = match;
     }

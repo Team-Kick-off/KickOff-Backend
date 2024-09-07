@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum AcceptStatus {
-    ClOSE("수락요청"),
-    OPEN("수락완료");
+    CALL("수락요청"),
+    ACCEPT("수락완료");
 
     private final String massage;
 }
