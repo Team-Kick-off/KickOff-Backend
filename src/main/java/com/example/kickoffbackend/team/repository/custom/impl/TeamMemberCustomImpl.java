@@ -54,4 +54,11 @@ public class TeamMemberCustomImpl implements TeamMemberCustom {
                 .fetchOne();
     }
 
+    @Override
+    public List<TeamMember> findByIdList(Long teamMemberId) {
+        return queryFactory.selectFrom(teamMember)
+                .where(teamMember.id.eq(teamMemberId))
+                .fetch();
+    }
+
 }

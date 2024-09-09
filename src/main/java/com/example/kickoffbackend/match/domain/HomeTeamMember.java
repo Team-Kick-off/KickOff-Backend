@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "homeTeamMembers")
 public class HomeTeamMember {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "home_team_members_id")
     private Long id;
 
     private String nickname;
@@ -23,7 +24,7 @@ public class HomeTeamMember {
     private Match match;
 
     @Builder(toBuilder = true)
-    private HomeTeamMember(String nickname, Match match) {
+    public HomeTeamMember(String nickname, Match match) {
         this.nickname = nickname;
         this.match = match;
     }

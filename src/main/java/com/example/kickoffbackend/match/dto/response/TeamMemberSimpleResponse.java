@@ -19,11 +19,11 @@ public class TeamMemberSimpleResponse {
     private String teamMemberImageUrl;
 
 
-    public static TeamMemberSimpleResponse toTeamMemberSimpleInfoResponse(TeamMember teamMember) {
+    public static TeamMemberSimpleResponse toTeamMemberSimpleInfoResponse(TeamMember teamMember, String userImageUrl) {
         return TeamMemberSimpleResponse.builder()
                 .id(teamMember.getId())
                 .teamMemberNickname(teamMember.getUser().getNickname())
-                .teamMemberImageUrl(null)
+                .teamMemberImageUrl(userImageUrl)
                 .build();
     }
 }
