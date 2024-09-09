@@ -16,4 +16,6 @@ public interface TeamMemberCustom {
     List<Team> findTeamByUserId(Long userId);
 
     TeamMember findTeamMemberByUserId(Long userId);
+
+    List<TeamMember> findByIdList(Long teamMemberId);
 }

@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "acceptCompetes")
 public class AcceptCompete extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "accept_competes_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,6 +27,7 @@ public class AcceptCompete extends BaseEntity {
     @JoinColumn(name = "acceptTeamMember_id")
     private TeamMember acceptTeamMember;
 
+    @Enumerated(EnumType.STRING)
     private AcceptStatus status;
 
     @Builder
