@@ -8,10 +8,9 @@ import com.example.kickoffbackend.user.UserService;
 import com.example.kickoffbackend.user.dto.EmailCheckDto;
 import com.example.kickoffbackend.user.dto.EmailRequestDto;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -46,5 +45,19 @@ public class AuthController {
         String savedCode = userService.getVerificationCode(email);
         userService.verificationEmail(code, savedCode);
         return CustomApi.OK("인증 성공");
+    }
+
+    @GetMapping("/auth/email/{email}")
+    public CustomApi checkDuplicatedEmail(
+            @PathVariable(name = "email") String email
+    ) {
+        return userService.checkDuplicatedEmail(email);
+    }
+
+    @GetMapping("/auth/nickname/{nickname}")
+    public CustomApi checkDuplicatedNickname(
+            @PathVariable(name = "nickname") String nickname
+    ){
+        return userService.checkDuplicatedNickname(nickname);
     }
 }

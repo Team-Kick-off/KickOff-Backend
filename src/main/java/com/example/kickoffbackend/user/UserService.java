@@ -1,6 +1,7 @@
 package com.example.kickoffbackend.user;
 
 import com.example.kickoffbackend.auth.request.SignUpRequest;
+import com.example.kickoffbackend.common.CustomApi;
 import com.example.kickoffbackend.common.error.ApiException;
 import com.example.kickoffbackend.common.error.ErrorCode;
 import com.example.kickoffbackend.user.domain.Sex;
@@ -146,5 +147,19 @@ public class UserService {
         if (!code.equals(savedCode)){
             throw new ApiException(ErrorCode.EMAIL_BAD_REQUEST_ERROR);
         }
+    }
+
+    public CustomApi checkDuplicatedEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            return CustomApi.ERROR(400, "이미 가입된 이메일입니다.");
+        }
+        return CustomApi.OK("사용 가능한 이메일입니다.");
+    }
+
+    public CustomApi checkDuplicatedNickname(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            return CustomApi.ERROR(400, "이미 사용하고 있는 닉네임입니다.");
+        }
+        return CustomApi.OK("사용 가능한 닉네임입니다..");
     }
 }
