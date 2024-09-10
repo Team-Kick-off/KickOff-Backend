@@ -34,16 +34,7 @@ public class UserService {
         if(userRepository.existsByEmail(request.email())){
             throw new ApiException(ErrorCode.EMAIL_ALREADY_REGISTERED_ERROR);
         }
-
-        User user = User.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .address(request.address())
-                .birth(request.birth())
-                .name(request.name())
-                .nickname(request.nickname())
-                .sex(Sex.valueOf(request.sex()))
-                .build();
+        User user = request.toEntity(passwordEncoder);
 
         userRepository.save(user);
     }

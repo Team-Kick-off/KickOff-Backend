@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
-    @PostMapping("/join")
+    @PostMapping("auth/join")
     public CustomApi<Object> signUp(
             @RequestBody @Valid SignUpRequest request
     ){
