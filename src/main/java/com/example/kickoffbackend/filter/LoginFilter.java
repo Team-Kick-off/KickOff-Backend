@@ -12,7 +12,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
@@ -29,13 +29,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 @Slf4j
-@AllArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
-
     private final AuthenticationManager authenticationManager;
     private final ObjectMapper objectMapper;
-
     private final JwtUtil jwtUtil;
+
+    public LoginFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, JwtUtil jwtUtil){
+        this.authenticationManager = authenticationManager;
+        this.objectMapper = objectMapper;
+        this.jwtUtil = jwtUtil;
+        super.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/auth/login", "POST"));
+
+    }
 
     private final Long EXPIRED_MS = 24 * 60 * 60 * 1000L;
 

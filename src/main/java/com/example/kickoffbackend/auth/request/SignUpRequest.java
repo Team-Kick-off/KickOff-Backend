@@ -1,11 +1,15 @@
 package com.example.kickoffbackend.auth.request;
 
+import com.example.kickoffbackend.user.domain.Sex;
 import com.example.kickoffbackend.user.domain.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.List;
 
 @Builder
 public record SignUpRequest(
@@ -35,7 +39,22 @@ public record SignUpRequest(
         @NotBlank(message = "사용자 생년월일은 필수입니다.")
         String birth,
 
-        String address
+        String address,
+
+        @NotNull(message = "하나 이상의 포지션은 필수입니다.")
+        List<String> primaryPositions
 ) {
 
+        public User toEntity(BCryptPasswordEncoder passwordEncoder) {
+                return User.builder()
+                        .email(this.email())
+                        .password(passwordEncoder.encode(this.password()))
+                        .address(this.address())
+                        .birth(this.birth())
+                        .name(this.name())
+                        .nickname(this.nickname())
+                        .sex(Sex.valueOf(this.sex()))
+                        .primaryPositions(this.primaryPositions)
+                        .build();
+        }
 }

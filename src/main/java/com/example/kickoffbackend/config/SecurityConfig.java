@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/join", "/login", "/teams/**", "/email/**", "/match/**").permitAll()
+                        .requestMatchers("auth/**", "/teams/**", "/email/**", "/match/**").permitAll()
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), new ObjectMapper(), jwtUtil), UsernamePasswordAuthenticationFilter.class)
