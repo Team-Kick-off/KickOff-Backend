@@ -47,10 +47,10 @@ public class Match extends BaseEntity {
     private String fieldAddress;
 
     @OneToMany(mappedBy = "match")
-    private List<CompeteTeam> competeTeam; // 경기 주최팀 / 상대팀 중간테이블
+    private List<CompeteTeam> competeTeam = new ArrayList<>();
 
     @OneToMany(mappedBy = "match")
-    private List<AcceptCompete> acceptCompete;
+    private List<AcceptCompete> acceptCompete = new ArrayList<>();
 
     @OneToMany(mappedBy = "match")
     private List<HomeTeamMember> homeTeamMembers = new ArrayList<>();

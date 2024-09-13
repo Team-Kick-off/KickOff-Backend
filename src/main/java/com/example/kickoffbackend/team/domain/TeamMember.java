@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,7 +33,7 @@ public class TeamMember extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "acceptTeamMember")
-    private List<AcceptCompete> acceptCompete;
+    private List<AcceptCompete> acceptCompete = new ArrayList<>();
 
     private String teamRequestContent;
 

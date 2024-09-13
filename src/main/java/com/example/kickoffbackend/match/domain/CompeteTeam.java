@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "competeTeam")
+@Table(name = "competeTeams")
 public class CompeteTeam {
-    @Id @GeneratedValue
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "compete_teams_id")
     private Long id;
 
     @Column(nullable = false)

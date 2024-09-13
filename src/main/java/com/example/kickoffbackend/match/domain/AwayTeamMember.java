@@ -13,10 +13,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "awayTeamMembers")
 public class AwayTeamMember {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "away_team_members_id")
     private Long id;
-
-    private Position position;
 
     private String nickname;
 
@@ -25,8 +24,7 @@ public class AwayTeamMember {
     private Match match;
 
     @Builder(toBuilder = true)
-    private AwayTeamMember(Position position, String nickname, Match match) {
-        this.position = position;
+    public AwayTeamMember(String nickname, Match match) {
         this.nickname = nickname;
         this.match = match;
     }

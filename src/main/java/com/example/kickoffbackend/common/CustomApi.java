@@ -1,10 +1,12 @@
 package com.example.kickoffbackend.common;
 
 import com.example.kickoffbackend.common.error.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomApi<T> {
     private int code;
     private String message;
@@ -17,7 +19,7 @@ public class CustomApi<T> {
         this.data = data;
     }
 
-    public static <T> CustomApi<T> OK(T data){
+    public static <T> CustomApi<T> OK(T data) {
         return (CustomApi<T>) CustomApi.builder()
                 .code(200)
                 .message("성공")
@@ -25,7 +27,7 @@ public class CustomApi<T> {
                 .build();
     }
 
-    public static <T> CustomApi<T> OK(T data, String message){
+    public static <T> CustomApi<T> OK(T data, String message) {
         return (CustomApi<T>) CustomApi.builder()
                 .code(200)
                 .message(message)
@@ -33,7 +35,7 @@ public class CustomApi<T> {
                 .build();
     }
 
-    public static <T> CustomApi<T> OK(String message){
+    public static <T> CustomApi<T> OK(String message) {
         return (CustomApi<T>) CustomApi.builder()
                 .code(200)
                 .message(message)

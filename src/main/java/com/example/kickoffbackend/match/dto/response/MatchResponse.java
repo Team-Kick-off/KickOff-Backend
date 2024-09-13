@@ -1,10 +1,8 @@
 package com.example.kickoffbackend.match.dto.response;
 
-import com.example.kickoffbackend.match.domain.HomeTeamMember;
 import com.example.kickoffbackend.match.domain.Match;
 import com.example.kickoffbackend.match.domain.type.Level;
 import com.example.kickoffbackend.team.domain.Gender;
-import com.example.kickoffbackend.team.domain.TeamMember;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -40,9 +38,9 @@ public class MatchResponse {
 
     private String awayTeamName;
 
-    private List<TeamMemberSimpleResponse> homeTeamMembers;
+    private List<TeamMemberSimpleResponse> teamMembers;
 
-    public MatchResponse toMatchInfoResponse(Match match, String homeTeamName, String awayTeamName, List<TeamMemberSimpleResponse> homeTeamMembers) {
+    public MatchResponse toMatchInfoResponse(Match match, String homeTeamName, String awayTeamName, List<TeamMemberSimpleResponse> teamMembers) {
         return MatchResponse.builder()
                 .id(match.getId())
                 .matchDate(match.getMatchDate())
@@ -52,7 +50,7 @@ public class MatchResponse {
                 .level(match.getLevel())
                 .homeTeamName(homeTeamName)
                 .awayTeamName(awayTeamName)
-                .homeTeamMembers(homeTeamMembers)
+                .teamMembers(teamMembers)
                 .build();
     }
 }
