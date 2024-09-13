@@ -1,4 +1,4 @@
-package com.example.kickoffbackend.match.repository;
+package com.example.kickoffbackend.match.repository.custom;
 
 import org.springframework.transaction.annotation.Transactional;
 

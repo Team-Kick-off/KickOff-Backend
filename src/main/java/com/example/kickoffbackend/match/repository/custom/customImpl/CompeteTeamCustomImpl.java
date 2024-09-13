@@ -1,9 +1,9 @@
-package com.example.kickoffbackend.match.repository;
+package com.example.kickoffbackend.match.repository.custom.customImpl;
 
 import com.example.kickoffbackend.common.error.ApiException;
 import com.example.kickoffbackend.common.error.ErrorCode;
-import com.example.kickoffbackend.match.domain.CompeteTeam;
 import com.example.kickoffbackend.match.domain.type.CompeteType;
+import com.example.kickoffbackend.match.repository.custom.CompeteTeamCustom;
 import com.example.kickoffbackend.team.domain.Team;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -12,7 +12,7 @@ import static com.example.kickoffbackend.match.domain.QCompeteTeam.competeTeam;
 import static com.example.kickoffbackend.match.domain.QMatch.match;
 import static com.example.kickoffbackend.team.domain.QTeam.team;
 
-public class CompeteTeamCustomImpl implements CompeteTeamCustom{
+public class CompeteTeamCustomImpl implements CompeteTeamCustom {
 
     JPAQueryFactory queryFactory;
 

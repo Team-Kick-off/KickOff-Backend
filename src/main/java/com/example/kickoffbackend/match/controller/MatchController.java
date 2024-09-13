@@ -55,5 +55,4 @@ public class MatchController {
 
         return CustomApi.OK(matchService.getTeamInfo(teamName), "팀 조회가 완료되었습니다.");
     }
-
 }

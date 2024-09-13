@@ -1,9 +1,10 @@
-package com.example.kickoffbackend.match.repository;
+package com.example.kickoffbackend.match.repository.custom.customImpl;
 
+import com.example.kickoffbackend.match.repository.custom.HomeTeamMemberCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
-public class HomeTeamMemberCustomImpl implements HomeTeamMemberCustom{
+public class HomeTeamMemberCustomImpl implements HomeTeamMemberCustom {
 
     JPAQueryFactory queryFactory;
 

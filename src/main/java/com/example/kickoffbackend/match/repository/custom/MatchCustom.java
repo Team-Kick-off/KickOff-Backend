@@ -1,4 +1,4 @@
-package com.example.kickoffbackend.match.repository;
+package com.example.kickoffbackend.match.repository.custom;
 
 import com.example.kickoffbackend.match.domain.Match;
 import com.example.kickoffbackend.match.dto.request.MatchCreateRequest;
