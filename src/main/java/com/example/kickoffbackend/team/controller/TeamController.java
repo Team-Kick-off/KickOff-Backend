@@ -11,6 +11,9 @@ import com.example.kickoffbackend.team.dto.response.TeamFilterResponse;
 import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -59,11 +62,13 @@ public class TeamController {
     }
 
     @GetMapping("/filter")
-    public CustomApi<List<TeamFilterResponse>> findByTeamFilter(
+    public CustomApi<Page<TeamFilterResponse>> findByTeamFilter(
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "gender", required = false) Gender gender,
-            @RequestParam(value = "stauts", required = false, defaultValue = "OPEN")RecruitmentStatus status){
-        return CustomApi.OK(teamService.findTeamFilter(address, gender, status));
+            @RequestParam(value = "stauts", required = false, defaultValue = "OPEN") RecruitmentStatus status,
+            @PageableDefault(size = 10) Pageable pageable){
+
+        return CustomApi.OK(teamService.findTeamFilter(address, gender, status, pageable));
     }
 
     @GetMapping("/check-duplicate")

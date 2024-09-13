@@ -6,6 +6,7 @@ import com.example.kickoffbackend.team.repository.custom.TeamCustom;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class TeamCustomImpl implements TeamCustom {
     }
 
     @Override
-    public List<Team> findByTeamFilter(String address, Gender gender, RecruitmentStatus status) {
+    public List<Team> findByTeamFilter(String address, Gender gender, RecruitmentStatus status, Pageable pageable) {
 
         BooleanExpression expression = statusEq(status)
                 .and(addressEq(address))
@@ -48,7 +49,20 @@ public class TeamCustomImpl implements TeamCustom {
 
         return queryFactory.selectFrom(team)
                 .where(expression)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    @Override
+    public long countByTeamFilter(String address, Gender gender, RecruitmentStatus status) {
+        BooleanExpression expression = statusEq(status)
+                .and(addressEq(address))
+                .and(genderEq(gender));
+
+        return queryFactory.selectFrom(team)
+                .where(expression)
+                .fetchCount();
     }
 
     private BooleanExpression addressEq(String address) {

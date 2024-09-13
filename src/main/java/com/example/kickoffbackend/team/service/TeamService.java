@@ -18,6 +18,9 @@ import com.example.kickoffbackend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -188,11 +191,11 @@ public class TeamService {
 
 
     @Transactional(readOnly = true)
-    public List<TeamFilterResponse> findTeamFilter(String address, Gender gender, RecruitmentStatus status){
+    public Page<TeamFilterResponse> findTeamFilter(String address, Gender gender, RecruitmentStatus status, Pageable pageable){
 
-        List<Team> teams =  teamRepository.findByTeamFilter(address, gender, status);
+        List<Team> teams =  teamRepository.findByTeamFilter(address, gender, status, pageable);
 
-        return teams.stream()
+        List<TeamFilterResponse> teamFilterResponses = teams.stream()
                 .map(team -> {
                     String teamImageUrl = "";
                     if (!team.getTeamImages().isEmpty()) {
@@ -202,6 +205,9 @@ public class TeamService {
                     return new TeamFilterResponse().toTeamFilterResponse(team, teamImageUrl);
                 })
                 .collect(Collectors.toList());
+
+        long total = teamRepository.countByTeamFilter(address, gender, status);
+        return new PageImpl<>(teamFilterResponses, pageable, total);
     }
 
     public boolean isTeamNameDuplicate(String teamName) {
