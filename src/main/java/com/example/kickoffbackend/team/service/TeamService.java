@@ -4,10 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.kickoffbackend.common.error.ApiException;
 import com.example.kickoffbackend.common.error.ErrorCode;
-import com.example.kickoffbackend.team.domain.Role;
-import com.example.kickoffbackend.team.domain.Team;
-import com.example.kickoffbackend.team.domain.TeamImage;
-import com.example.kickoffbackend.team.domain.TeamMember;
+import com.example.kickoffbackend.team.domain.*;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
 import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
 import com.example.kickoffbackend.team.dto.response.TeamFilterResponse;
@@ -191,9 +188,9 @@ public class TeamService {
 
 
     @Transactional(readOnly = true)
-    public List<TeamFilterResponse> findTeamFilter(TeamFilterRequest teamFilterRequest){
+    public List<TeamFilterResponse> findTeamFilter(String address, Gender gender, RecruitmentStatus status){
 
-        List<Team> teams =  teamRepository.findByTeamFilter(teamFilterRequest);
+        List<Team> teams =  teamRepository.findByTeamFilter(address, gender, status);
 
         return teams.stream()
                 .map(team -> {

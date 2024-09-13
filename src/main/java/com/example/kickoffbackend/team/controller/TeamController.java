@@ -2,6 +2,8 @@ package com.example.kickoffbackend.team.controller;
 
 import com.example.kickoffbackend.common.CustomApi;
 import com.example.kickoffbackend.common.error.ErrorCode;
+import com.example.kickoffbackend.team.domain.Gender;
+import com.example.kickoffbackend.team.domain.RecruitmentStatus;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
 import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
 import com.example.kickoffbackend.team.dto.request.TeamRegisterRequest;
@@ -56,14 +58,16 @@ public class TeamController {
         return CustomApi.OK(teamService.teamRegister(teamName, email, teamRequestContent));
     }
 
-    @PostMapping("/filter")
-    public CustomApi<List<TeamFilterResponse>> findByTeamFilter(@RequestBody TeamFilterRequest teamFilterRequest){
-        return CustomApi.OK(teamService.findTeamFilter(teamFilterRequest));
+    @GetMapping("/filter")
+    public CustomApi<List<TeamFilterResponse>> findByTeamFilter(
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "gender", required = false) Gender gender,
+            @RequestParam(value = "stauts", required = false, defaultValue = "OPEN")RecruitmentStatus status){
+        return CustomApi.OK(teamService.findTeamFilter(address, gender, status));
     }
 
     @GetMapping("/check-duplicate")
     public CustomApi<Boolean> checkDuplicateTeamName(@RequestParam("teamName") String teamName) {
-        System.out.println("teamName : " + teamName);
         boolean isDuplicate = teamService.isTeamNameDuplicate(teamName);
         return CustomApi.OK(isDuplicate, isDuplicate ? "이미 존재하는 팀 이름입니다." : "사용 가능한 팀 이름입니다.");
     }

@@ -1,5 +1,7 @@
 package com.example.kickoffbackend.team.repository.custom;
 
+import com.example.kickoffbackend.team.domain.Gender;
+import com.example.kickoffbackend.team.domain.RecruitmentStatus;
 import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.domain.TeamMember;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
@@ -15,7 +17,7 @@ import java.util.Set;
 public interface TeamCustom {
     Optional<Team> findByName(String teamName);
 
-    List<Team> findByTeamFilter(TeamFilterRequest teamFilterRequest);
+    List<Team> findByTeamFilter(String address, Gender gender, RecruitmentStatus status);
 
     default Team toEntity(TeamCreateRequest request){
         return Team.builder()

@@ -39,11 +39,11 @@ public class TeamCustomImpl implements TeamCustom {
     }
 
     @Override
-    public List<Team> findByTeamFilter(TeamFilterRequest teamFilterRequest) {
+    public List<Team> findByTeamFilter(String address, Gender gender, RecruitmentStatus status) {
 
-        BooleanExpression expression = statusEq(teamFilterRequest.getStatus())
-                .and(addressEq(teamFilterRequest.getAddress()))
-                .and(genderEq(teamFilterRequest.getGender()));
+        BooleanExpression expression = statusEq(status)
+                .and(addressEq(address))
+                .and(genderEq(gender));
 
 
         return queryFactory.selectFrom(team)
