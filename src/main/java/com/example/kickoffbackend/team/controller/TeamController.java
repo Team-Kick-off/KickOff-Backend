@@ -2,6 +2,8 @@ package com.example.kickoffbackend.team.controller;
 
 import com.example.kickoffbackend.common.CustomApi;
 import com.example.kickoffbackend.common.error.ErrorCode;
+import com.example.kickoffbackend.team.domain.Gender;
+import com.example.kickoffbackend.team.domain.RecruitmentStatus;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
 import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
 import com.example.kickoffbackend.team.dto.request.TeamRegisterRequest;
@@ -9,6 +11,9 @@ import com.example.kickoffbackend.team.dto.response.TeamFilterResponse;
 import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -56,14 +61,18 @@ public class TeamController {
         return CustomApi.OK(teamService.teamRegister(teamName, email, teamRequestContent));
     }
 
-    @PostMapping("/filter")
-    public CustomApi<List<TeamFilterResponse>> findByTeamFilter(@RequestBody TeamFilterRequest teamFilterRequest){
-        return CustomApi.OK(teamService.findTeamFilter(teamFilterRequest));
+    @GetMapping("/filter")
+    public CustomApi<Page<TeamFilterResponse>> findByTeamFilter(
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "gender", required = false) Gender gender,
+            @RequestParam(value = "stauts", required = false, defaultValue = "OPEN") RecruitmentStatus status,
+            @PageableDefault(size = 10) Pageable pageable){
+
+        return CustomApi.OK(teamService.findTeamFilter(address, gender, status, pageable));
     }
 
     @GetMapping("/check-duplicate")
     public CustomApi<Boolean> checkDuplicateTeamName(@RequestParam("teamName") String teamName) {
-        System.out.println("teamName : " + teamName);
         boolean isDuplicate = teamService.isTeamNameDuplicate(teamName);
         return CustomApi.OK(isDuplicate, isDuplicate ? "이미 존재하는 팀 이름입니다." : "사용 가능한 팀 이름입니다.");
     }
