@@ -19,14 +19,9 @@ spring:
     secret: ${JWT-SECRET}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://kickoff.cj6acmmqwefb.ap-northeast-2.rds.amazonaws.com:3306/kickoff?characterEncoding=utf-8&serverTimezone=UTC
+    url: jdbc:mysql://kickoffmysql.cj6acmmqwefb.ap-northeast-2.rds.amazonaws.com:3306/kickoff?characterEncoding=utf-8&serverTimezone=UTC
     username: admin
     password: ${RDS-SECRET}
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
