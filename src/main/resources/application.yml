@@ -19,7 +19,7 @@ spring:
     secret: ${JWT-SECRET}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://kickoffmysql.cj6acmmqwefb.ap-northeast-2.rds.amazonaws.com:3306/kickoff?characterEncoding=utf-8&serverTimezone=UTC
+    url: jdbc:mysql://kickoffmysql.cj6acmmqwefb.ap-northeast-2.rds.amazonaws.com:3306/kickoffmysql?characterEncoding=utf-8&serverTimezone=UTC
     username: admin
     password: ${RDS-SECRET}
 
