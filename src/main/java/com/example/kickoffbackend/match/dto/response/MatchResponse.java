@@ -3,6 +3,7 @@ package com.example.kickoffbackend.match.dto.response;
 import com.example.kickoffbackend.match.domain.Match;
 import com.example.kickoffbackend.match.domain.type.Level;
 import com.example.kickoffbackend.team.domain.Gender;
+import com.example.kickoffbackend.team.dto.response.TeamMemberSimpleResponse;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;

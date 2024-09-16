@@ -34,7 +34,7 @@ public class CompeteTeamCustomImpl implements CompeteTeamCustom {
                 .from(competeTeam)
                 .join(competeTeam.match, match)
                 .join(competeTeam.team, team)
-                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.HomeTeam)))
+                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.HOME_TEAM)))
                 .fetchOne();
 
         if (homeTeam == null) {
@@ -50,7 +50,7 @@ public class CompeteTeamCustomImpl implements CompeteTeamCustom {
                 .from(competeTeam)
                 .join(competeTeam.match, match)
                 .join(competeTeam.team, team)
-                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.AwayTeam)))
+                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.AWAY_TEAM)))
                 .fetchOne();
     }
 }

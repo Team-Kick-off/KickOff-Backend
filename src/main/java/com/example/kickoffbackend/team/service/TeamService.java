@@ -4,9 +4,10 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.kickoffbackend.common.error.ApiException;
 import com.example.kickoffbackend.common.error.ErrorCode;
+import com.example.kickoffbackend.team.dto.response.TeamMemberSimpleResponse;
+import com.example.kickoffbackend.team.dto.response.TeamSimpleResponse;
 import com.example.kickoffbackend.team.domain.*;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
-import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
 import com.example.kickoffbackend.team.dto.response.TeamFilterResponse;
 import com.example.kickoffbackend.team.dto.response.TeamMemberResponse;
 import com.example.kickoffbackend.team.dto.response.TeamResponse;
@@ -214,5 +215,68 @@ public class TeamService {
         Optional<Team> result = teamRepository.findByTeamName(teamName);
 
         return result.isPresent();
+    }
+
+    /**
+     * Match 관련 조회 Service
+     * Description : 경기_생성, 경기_수락, 경기_운영관리 관련
+     **/
+
+    public List<TeamSimpleResponse> findTeamByUser(String email) { // 경기 생성_로그인 유저의 팀들 조회
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        List<Team> teamList = teamMemberRepository.findTeamByUserId(user.getId());
+        return teamList.stream()
+                .map(team -> {
+                    String teamImageUrl = getTeamImageUrl(team);
+                    return new TeamSimpleResponse().toTeamSimpleInfoResponse(team, teamImageUrl);
+                })
+                .toList();
+    }
+
+    public TeamSimpleResponse findTeamMemberList(String teamName) { // 경기 생성_선택한 팀의 팀원들 조회
+
+        Team team = teamRepository.findByName(teamName)
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        String teamImageUrl = getTeamImageUrl(team);
+
+        List<TeamMemberSimpleResponse> teamMembers =  team.getTeamMembers().stream()
+                .map(teamMember -> {
+                    return getTeamMemberSimpleResponse(teamMember);
+                })
+                .toList();
+
+        return new TeamSimpleResponse().toTeamSimpleResponse(team, teamImageUrl, teamMembers);
+    }
+
+    public List<TeamSimpleResponse> searchAwayTeamList(String teamName) { // 경기 생성_상대팀 검색 조회
+
+        Team team = teamRepository.findByName(teamName)
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        List<Team> teamList = teamRepository.findSearchByTeam(teamName);
+        return teamList.stream()
+                .map(awayTeam -> {
+                    String teamImageUrl = getTeamImageUrl(awayTeam);
+                    return new TeamSimpleResponse().toTeamSimpleInfoResponse(awayTeam, teamImageUrl);
+                })
+                .toList();
+    }
+
+    private String getTeamImageUrl(Team team) {
+        String teamImageUrl = "";
+        if(!team.getTeamImages().isEmpty()){
+            URL url = amazonS3Client.getUrl(bucket, team.getTeamImages().get(0).getStoredName());
+            teamImageUrl = url.toString();
+        }
+        return teamImageUrl;
+    }
+
+    private TeamMemberSimpleResponse getTeamMemberSimpleResponse(TeamMember teamMember) {
+        URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
+        String userImageUrl = url.toString();
+        return new TeamMemberSimpleResponse().toTeamMemberSimpleInfoResponse(teamMember, userImageUrl);
     }
 }

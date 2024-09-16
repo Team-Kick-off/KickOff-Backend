@@ -1,14 +1,14 @@
 package com.example.kickoffbackend.team.controller;
 
+import com.example.kickoffbackend.auth.UserPrincipal;
 import com.example.kickoffbackend.common.CustomApi;
 import com.example.kickoffbackend.common.error.ErrorCode;
+import com.example.kickoffbackend.team.dto.response.TeamSimpleResponse;
 import com.example.kickoffbackend.team.domain.Gender;
 import com.example.kickoffbackend.team.domain.RecruitmentStatus;
 import com.example.kickoffbackend.team.dto.request.TeamCreateRequest;
-import com.example.kickoffbackend.team.dto.request.TeamFilterRequest;
 import com.example.kickoffbackend.team.dto.request.TeamRegisterRequest;
 import com.example.kickoffbackend.team.dto.response.TeamFilterResponse;
-import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -76,4 +76,30 @@ public class TeamController {
         boolean isDuplicate = teamService.isTeamNameDuplicate(teamName);
         return CustomApi.OK(isDuplicate, isDuplicate ? "이미 존재하는 팀 이름입니다." : "사용 가능한 팀 이름입니다.");
     }
+
+    /**
+     * Match 관련 조회 Controller
+     * Description : 경기_생성, 경기_수락, 경기_운영관리 관련
+     **/
+
+    @GetMapping("/userTeam") // 경기 생성_로그인 유저의 팀들 조회
+    public CustomApi<List<TeamSimpleResponse>> getTeamByUser(@AuthenticationPrincipal UserPrincipal userPrincipal) throws IOException {
+        String email = userPrincipal.getUsername();
+
+        return CustomApi.OK(teamService.findTeamByUser(email), email + "님의 팀 조회를 완료했습니다.");
+    }
+
+    @GetMapping("/{teamName}/teamMemberList") // 경기 생성_선택한 팀의 팀원들 조회
+    public CustomApi getTeamMemberList(@PathVariable("teamName") String teamName) {
+
+        return CustomApi.OK(teamService.findTeamMemberList(teamName), teamName + "팀의 팀원 조회를 완료했습니다.");
+    }
+
+    @GetMapping("/{teamName}/search") // 경기 생성_상대팀 검색 조회
+    public CustomApi<List<TeamSimpleResponse>> searchAwayTeam
+            (@PathVariable("teamName") String teamName) {
+
+        return CustomApi.OK(teamService.searchAwayTeamList(teamName), "상대팀 검색 조회를 완료했습니다.");
+    }
+
 }

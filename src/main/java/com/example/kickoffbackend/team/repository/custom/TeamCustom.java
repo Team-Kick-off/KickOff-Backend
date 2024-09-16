@@ -67,5 +67,5 @@ public interface TeamCustom {
         return teamResponse;
     }
 
-    List<Team> findSearchByTeam(String teamName, String search);
+    List<Team> findSearchByTeam(String teamName);
 }

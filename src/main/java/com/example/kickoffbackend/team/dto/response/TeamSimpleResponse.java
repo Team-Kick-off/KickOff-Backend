@@ -1,11 +1,12 @@
-package com.example.kickoffbackend.match.dto.response;
+package com.example.kickoffbackend.team.dto.response;
 
 import com.example.kickoffbackend.team.domain.Team;
-import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -19,12 +20,22 @@ public class TeamSimpleResponse {
 
     private String teamImageUrl;
 
+    private List<TeamMemberSimpleResponse> teamMembers;
 
     public TeamSimpleResponse toTeamSimpleInfoResponse(Team team, String teamImageUrl) {
         return TeamSimpleResponse.builder()
                 .id(team.getId())
                 .teamName(team.getTeamName())
                 .teamImageUrl(teamImageUrl)
+                .build();
+    }
+
+    public TeamSimpleResponse toTeamSimpleResponse(Team team, String teamImageUrl, List<TeamMemberSimpleResponse> teamMembers) {
+        return TeamSimpleResponse.builder()
+                .id(team.getId())
+                .teamName(team.getTeamName())
+                .teamImageUrl(teamImageUrl)
+                .teamMembers(teamMembers)
                 .build();
     }
 }
