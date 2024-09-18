@@ -36,4 +36,8 @@ public class AcceptCompete extends BaseEntity {
         this.acceptTeamMember = acceptTeamMember;
         this.status = status;
     }
+
+    public void setAcceptTeamMember(TeamMember acceptTeamMember) { this.acceptTeamMember = acceptTeamMember; }
+
+    public void updateStatus(AcceptStatus status) { this.status = status; }
 }

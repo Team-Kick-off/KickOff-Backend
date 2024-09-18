@@ -27,5 +27,13 @@ public class MatchController {
         return CustomApi.OK(matchService.createMatch(matchCreateRequest, email), "경기 생성 및 상대팀 참가요청 알림이 전송되었습니다.");
     }
 
+    @PostMapping("/{matchId}/awayTeam/accept")
+    public CustomApi acceptMatch(@PathVariable("matchId") Long matchId, @RequestBody AcceptTeamMemberRequest request, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        String email = userPrincipal.getUsername();
+
+        return CustomApi.OK(matchService.getAcceptMatchInfo(matchId, request, email), "수락 요청 경기의 조회가 완료되었습니다.");
+    }
+
 
 }

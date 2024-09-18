@@ -6,6 +6,8 @@ import com.example.kickoffbackend.common.error.ErrorCode;
 import com.example.kickoffbackend.match.domain.*;
 import com.example.kickoffbackend.match.domain.type.AcceptStatus;
 import com.example.kickoffbackend.match.domain.type.CompeteType;
+import com.example.kickoffbackend.match.domain.type.MatchStatus;
+import com.example.kickoffbackend.match.dto.request.AcceptTeamMemberRequest;
 import com.example.kickoffbackend.match.dto.request.MatchCreateRequest;
 import com.example.kickoffbackend.match.dto.response.MatchResponse;
 import com.example.kickoffbackend.team.dto.response.TeamSimpleResponse;
@@ -25,6 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -63,7 +68,7 @@ public class MatchService {
                 .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
 
         limitMatchCreate(team);
-        // 경기장과 경기일정이 이미 있으면 생성 못하도록???
+        duplicateCheckField(LocalDate.parse(request.getMatchDate()), LocalTime.parse(request.getStartTime()), request.getFieldName());
 
         Match match = matchRepository.toEntity(request);
         matchRepository.save(match);
@@ -132,6 +137,57 @@ public class MatchService {
         if(matchCount >= 4) {
             throw new IllegalArgumentException("팀당 경기 생성은 3개까지 가능합니다.");
         }
+    }
+
+    private void duplicateCheckField(LocalDate matchDate, LocalTime startTime, String fieldName) {
+        if(matchRepository.findByField(matchDate, startTime, fieldName)) {
+            throw new IllegalArgumentException("해당 일정에는 이미 예약된 경기장입니다.");
+        }
+    }
+
+    public MatchResponse getAcceptMatchInfo(Long matchId, AcceptTeamMemberRequest request, String email) {
+
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new ApiException(ErrorCode.MATCH_NOT_FOUND));
+
+        match.updateStatus(MatchStatus.RECRUITMENT_ENDS);
+
+        Team homeTeam = competeTeamRepository.findHomeTeamByMatchId(match.getId());
+        Team awayTeam = competeTeamRepository.findAwayTeamByMatchId(match.getId());
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        List<TeamMemberSimpleResponse> awayTeamMembers = request.getTeamMemberIdList().stream()
+                .flatMap(teamMemberId -> {
+                    List<TeamMember> teamMembers = teamMemberRepository.findByIdList(teamMemberId);
+                    return teamMembers.stream()
+                            .map(teamMember -> {
+                                if(user.getNickname().equals(teamMember.getUser().getNickname())){
+                                    CompeteTeamMember awayHostTeamMember = CompeteTeamMember.builder()
+                                            .nickname(teamMember.getUser().getNickname())
+                                            .competeType(CompeteType.AWAY_TEAM_HOST)
+                                            .match(match)
+                                            .build();
+                                    competeTeamMemberRepository.save(awayHostTeamMember);
+
+                                    return getTeamMemberSimpleResponse(teamMember);
+                                }
+                                CompeteTeamMember awayTeamMember = CompeteTeamMember.builder()
+                                        .nickname(teamMember.getUser().getNickname())
+                                        .competeType(CompeteType.AWAY_TEAM)
+                                        .match(match)
+                                        .build();
+                                competeTeamMemberRepository.save(awayTeamMember);
+
+                                return getTeamMemberSimpleResponse(teamMember);
+                            });
+                }).toList();
+
+        AcceptCompete acceptCompete = acceptCompeteRepository.findByMatchId(matchId);
+        acceptCompete.setAcceptTeamMember(teamMemberRepository.findTeamMemberByUserId(user.getId()));
+        acceptCompete.updateStatus(AcceptStatus.ACCEPT);
+
+        return new MatchResponse().toMatchInfoResponse(match, homeTeam.getTeamName(), awayTeam.getTeamName(), awayTeamMembers);
     }
 
     private TeamMemberSimpleResponse getTeamMemberSimpleResponse(TeamMember teamMember) {

@@ -89,7 +89,7 @@ public class TeamController {
         return CustomApi.OK(teamService.findTeamByUser(email), email + "님의 팀 조회를 완료했습니다.");
     }
 
-    @GetMapping("/{teamName}/teamMemberList") // 경기 생성_선택한 팀의 팀원들 조회
+    @GetMapping("/{teamName}/teamMembers") // 경기 생성_선택한 팀의 팀원들 조회
     public CustomApi getTeamMemberList(@PathVariable("teamName") String teamName) {
 
         return CustomApi.OK(teamService.findTeamMemberList(teamName), teamName + "팀의 팀원 조회를 완료했습니다.");
@@ -102,4 +102,9 @@ public class TeamController {
         return CustomApi.OK(teamService.searchAwayTeamList(teamName), "상대팀 검색 조회를 완료했습니다.");
     }
 
+    @GetMapping("/{matchId}/awayTeamMembers")
+    public CustomApi getTeamSimpleInfo(@PathVariable("matchId") Long matchId) {
+
+        return CustomApi.OK(teamService.findAwayTeamMemberList(matchId), "Away팀 및 팀원 조회가 완료되었습니다.");
+    }
 }

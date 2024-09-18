@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 public enum CompeteType {
     HOME_TEAM("주최팀"),
     HOME_TEAM_HOST("주최한 운영진"),
-    AWAY_TEAM("상대팀");
+    AWAY_TEAM("상대팀"),
+    AWAY_TEAM_HOST("주최한 운영진");
+            ;
 
     public final String massage;
 }

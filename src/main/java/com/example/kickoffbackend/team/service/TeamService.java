@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.kickoffbackend.common.error.ApiException;
 import com.example.kickoffbackend.common.error.ErrorCode;
+import com.example.kickoffbackend.match.repository.CompeteTeamRepository;
 import com.example.kickoffbackend.team.dto.response.TeamMemberSimpleResponse;
 import com.example.kickoffbackend.team.dto.response.TeamSimpleResponse;
 import com.example.kickoffbackend.team.domain.*;
@@ -49,13 +50,16 @@ public class TeamService {
 
     private final TeamMemberRepository teamMemberRepository;
 
+    private final CompeteTeamRepository competeTeamRepository;
+
     @Autowired
-    public TeamService(AmazonS3Client amazonS3Client, TeamImageRepository teamImageRepository, TeamMemberRepository teamMemberRepository, TeamRepository teamRepository, UserRepository userRepository){
+    public TeamService(AmazonS3Client amazonS3Client, TeamImageRepository teamImageRepository, TeamMemberRepository teamMemberRepository, TeamRepository teamRepository, UserRepository userRepository, CompeteTeamRepository competeTeamRepository){
         this.amazonS3Client = amazonS3Client;
         this.teamImageRepository = teamImageRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.competeTeamRepository = competeTeamRepository;
     }
 
     @Value("${cloud.aws.s3.bucket}")
@@ -263,6 +267,21 @@ public class TeamService {
                     return new TeamSimpleResponse().toTeamSimpleInfoResponse(awayTeam, teamImageUrl);
                 })
                 .toList();
+    }
+
+    public TeamSimpleResponse findAwayTeamMemberList(Long matchId) {
+
+        Team team = competeTeamRepository.findAwayTeamByMatchId(matchId);
+
+        String teamImageUrl = getTeamImageUrl(team);
+
+        List<TeamMemberSimpleResponse> teamMembers =  team.getTeamMembers().stream()
+                .map(teamMember -> {
+                    return getTeamMemberSimpleResponse(teamMember);
+                })
+                .toList();
+
+        return new TeamSimpleResponse().toTeamSimpleResponse(team, teamImageUrl, teamMembers);
     }
 
     private String getTeamImageUrl(Team team) {

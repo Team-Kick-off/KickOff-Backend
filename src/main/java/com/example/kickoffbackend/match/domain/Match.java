@@ -80,6 +80,8 @@ public class Match extends BaseEntity {
         this.fieldAddress = fieldAddress;
     }
 
+    public void updateStatus(MatchStatus status) { this.status = status; }
+
     public void updateEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
