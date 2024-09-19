@@ -78,10 +78,10 @@ public class TeamCustomImpl implements TeamCustom {
     }
 
     @Override
-    public List<Team> findSearchByTeam(String teamName, String search) {
+    public List<Team> findSearchByTeam(String teamName) {
         return queryFactory
                 .selectFrom(team)
-                .where(team.teamName.ne(teamName).and(team.teamName.contains(search)))
+                .where(team.teamName.ne(teamName))
                 .fetch();
     }
 }

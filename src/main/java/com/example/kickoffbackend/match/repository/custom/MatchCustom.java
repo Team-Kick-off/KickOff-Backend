@@ -1,13 +1,11 @@
-package com.example.kickoffbackend.match.repository;
+package com.example.kickoffbackend.match.repository.custom;
 
 import com.example.kickoffbackend.match.domain.Match;
 import com.example.kickoffbackend.match.dto.request.MatchCreateRequest;
-import com.example.kickoffbackend.team.domain.Team;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Transactional
 public interface MatchCustom {
@@ -22,4 +20,6 @@ public interface MatchCustom {
                 .gender(request.getGender())
                 .build();
     }
+
+    boolean findByField(LocalDate matchDate, LocalTime startTime, String fieldName);
 }

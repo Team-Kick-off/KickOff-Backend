@@ -4,6 +4,7 @@ import com.example.kickoffbackend.common.BaseEntity;
 import com.example.kickoffbackend.match.domain.type.Level;
 import com.example.kickoffbackend.match.domain.type.MatchStatus;
 import com.example.kickoffbackend.team.domain.Gender;
+import com.example.kickoffbackend.team.domain.TeamMember;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,17 +47,26 @@ public class Match extends BaseEntity {
 
     private String fieldAddress;
 
+    /**
+     * Description  : 경기 주최팀 또는 상대팀 구분하는 도메인
+     * Relation     : Match-CompeteTeam, CompeteTeam-Team
+     **/
     @OneToMany(mappedBy = "match")
     private List<CompeteTeam> competeTeam = new ArrayList<>();
 
+    /**
+     * Description  : 상대팀 경기 수락 여부 확인하는 도메인
+     * Relation     : Match-AcceptCompete, AcceptCompete-TeamMember
+     **/
     @OneToMany(mappedBy = "match")
     private List<AcceptCompete> acceptCompete = new ArrayList<>();
 
+    /**
+     * Description  : 경기 주최팀원, 주최한 운영진, 상대팀원 구분하는 도메인
+     * Relation     : Match-CompeteTeamMember
+     **/
     @OneToMany(mappedBy = "match")
-    private List<HomeTeamMember> homeTeamMembers = new ArrayList<>();
-
-    @OneToMany(mappedBy = "match")
-    private List<AwayTeamMember> awayTeamMembers = new ArrayList<>();
+    private List<CompeteTeamMember> competeTeamMembers = new ArrayList<>();
 
     @Builder(toBuilder = true)
     public Match(LocalDate matchDate, LocalTime startTime, LocalTime endTime, Level level, Gender gender, MatchStatus status, String fieldName, String fieldAddress) {
@@ -69,6 +79,8 @@ public class Match extends BaseEntity {
         this.fieldName = fieldName;
         this.fieldAddress = fieldAddress;
     }
+
+    public void updateStatus(MatchStatus status) { this.status = status; }
 
     public void updateEndTime(LocalTime endTime) {
         this.endTime = endTime;

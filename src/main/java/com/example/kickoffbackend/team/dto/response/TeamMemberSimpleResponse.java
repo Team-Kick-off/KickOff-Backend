@@ -1,4 +1,4 @@
-package com.example.kickoffbackend.match.dto.response;
+package com.example.kickoffbackend.team.dto.response;
 
 import com.example.kickoffbackend.team.domain.TeamMember;
 import lombok.AllArgsConstructor;

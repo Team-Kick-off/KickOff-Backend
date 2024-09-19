@@ -6,18 +6,15 @@ import com.example.kickoffbackend.common.error.ErrorCode;
 import com.example.kickoffbackend.match.domain.*;
 import com.example.kickoffbackend.match.domain.type.AcceptStatus;
 import com.example.kickoffbackend.match.domain.type.CompeteType;
+import com.example.kickoffbackend.match.domain.type.MatchStatus;
 import com.example.kickoffbackend.match.dto.request.AcceptTeamMemberRequest;
 import com.example.kickoffbackend.match.dto.request.MatchCreateRequest;
 import com.example.kickoffbackend.match.dto.response.MatchResponse;
-import com.example.kickoffbackend.match.dto.response.TeamSimpleResponse;
-import com.example.kickoffbackend.match.repository.AcceptCompeteRepository;
-import com.example.kickoffbackend.match.repository.AwayTeamMemberRepository;
-import com.example.kickoffbackend.match.repository.CompeteTeamRepository;
-import com.example.kickoffbackend.match.dto.response.TeamMemberSimpleResponse;
-import com.example.kickoffbackend.match.repository.MatchRepository;
+import com.example.kickoffbackend.team.dto.response.TeamSimpleResponse;
+import com.example.kickoffbackend.match.repository.*;
+import com.example.kickoffbackend.team.dto.response.TeamMemberSimpleResponse;
 import com.example.kickoffbackend.team.domain.Team;
 import com.example.kickoffbackend.team.domain.TeamMember;
-import com.example.kickoffbackend.team.dto.response.TeamResponse;
 import com.example.kickoffbackend.team.repository.TeamMemberRepository;
 import com.example.kickoffbackend.team.repository.TeamRepository;
 import com.example.kickoffbackend.user.UserRepository;
@@ -30,10 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional(readOnly = true) //⭐
+@Transactional
 @AllArgsConstructor
 @Service
 public class MatchService {
@@ -41,15 +40,14 @@ public class MatchService {
     private final AmazonS3Client amazonS3Client;
 
     @Autowired
-    public MatchService(AmazonS3Client amazonS3Client, MatchRepository matchRepository, TeamRepository teamRepository, TeamMemberRepository teamMemberRepository, UserRepository userRepository, CompeteTeamRepository competeTeamRepository, HomeTeamMemberRepository homeTeamMemberRepository, AwayTeamMemberRepository awayTeamMemberRepository, AcceptCompeteRepository acceptCompeteRepository) {
+    public MatchService(AmazonS3Client amazonS3Client, MatchRepository matchRepository, TeamRepository teamRepository, TeamMemberRepository teamMemberRepository, UserRepository userRepository, CompeteTeamRepository competeTeamRepository, CompeteTeamMemberRepository competeTeamMemberRepository, AcceptCompeteRepository acceptCompeteRepository) {
         this.amazonS3Client = amazonS3Client;
         this.matchRepository = matchRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
         this.competeTeamRepository = competeTeamRepository;
-        this.homeTeamMemberRepository = homeTeamMemberRepository;
-        this.awayTeamMemberRepository = awayTeamMemberRepository;
+        this.competeTeamMemberRepository = competeTeamMemberRepository;
         this.acceptCompeteRepository = acceptCompeteRepository;
     }
 
@@ -61,78 +59,22 @@ public class MatchService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
     private final CompeteTeamRepository competeTeamRepository;
-    private final HomeTeamMemberRepository homeTeamMemberRepository;
-    private final AwayTeamMemberRepository awayTeamMemberRepository;
+    private final CompeteTeamMemberRepository competeTeamMemberRepository;
     private final AcceptCompeteRepository acceptCompeteRepository;
 
-    public List<TeamSimpleResponse> findTeamList(String email) {
-
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
-
-        List<Team> teamList = teamMemberRepository.findTeamByUserId(user.getId());
-        return teamList.stream()
-                .map(team -> {
-                    String teamImageUrl = "";
-                    if(!team.getTeamImages().isEmpty()) {
-                        URL url = amazonS3Client.getUrl(bucket, team.getTeamImages().get(0).getStoredName());
-                        teamImageUrl = url.toString();
-                    }
-                    return new TeamSimpleResponse().toTeamSimpleInfoResponse(team, teamImageUrl);
-                })
-                .toList();
-
-    }
-
-    private List<TeamMemberSimpleResponse> getTeamMemberSimpleResponses(Team team) {
-
-        return team.getTeamMembers().stream()
-                .map(teamMember -> {
-                    URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
-                    String userImageUrl = url.toString();
-                    return new TeamMemberSimpleResponse().toTeamMemberSimpleInfoResponse(teamMember, userImageUrl);
-                })
-                .toList();
-    }
-
-    public List<TeamMemberSimpleResponse> findTeamMemberList(String teamName) {
-
-        Team team = teamRepository.findByName(teamName)
-                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
-
-        return getTeamMemberSimpleResponses(team);
-    }
-
-    public List<TeamSimpleResponse> searchAwayTeamList(String teamName, String keyword) {
-
-        Team team = teamRepository.findByName(teamName)
-                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
-
-        List<Team> teamList = teamRepository.findSearchByTeam(teamName, keyword);
-        return teamList.stream()
-                .map(awayTeam -> {
-                    String teamImageUrl = "";
-                    if(!awayTeam.getTeamImages().isEmpty()) {
-                        URL url = amazonS3Client.getUrl(bucket, awayTeam.getTeamImages().get(0).getStoredName());
-                        teamImageUrl = url.toString();
-                    }
-                    return new TeamSimpleResponse().toTeamSimpleInfoResponse(awayTeam, teamImageUrl);
-                })
-                .toList();
-    }
-
-    public MatchResponse createMatch(MatchCreateRequest request) throws IOException {
+    public MatchResponse createMatch(MatchCreateRequest request, String email) throws IOException {
 
         Team team = teamRepository.findByName(request.getHomeTeamName())
                 .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
 
         limitMatchCreate(team);
-        // 경기장과 경기일정이 이미 있으면 생성 못하도록???
+        duplicateCheckField(LocalDate.parse(request.getMatchDate()), LocalTime.parse(request.getStartTime()), request.getFieldName());
 
         Match match = matchRepository.toEntity(request);
         matchRepository.save(match);
 
         CompeteTeam competeHomeTeam = CompeteTeam.builder()
-                .competeType(CompeteType.HomeTeam)
+                .competeType(CompeteType.HOME_TEAM)
                 .match(match)
                 .team(team)
                 .build();
@@ -141,23 +83,33 @@ public class MatchService {
         Team awayTeam = teamRepository.findByName(request.getAwayTeamName())
                 .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
         CompeteTeam competeAwayTeam = CompeteTeam.builder()
-                .competeType(CompeteType.AwayTeam)
+                .competeType(CompeteType.AWAY_TEAM)
                 .match(match)
                 .team(awayTeam)
                 .build();
         competeTeamRepository.save(competeAwayTeam);
 
-        for(Long teamMemberId: request.getTeamMemberIdList()) {
-            teamMemberRepository.findByIdList(teamMemberId).stream()
-                    .map(teamMember -> {
-                        HomeTeamMember homeTeamMember = HomeTeamMember.builder()
-                                .nickname(teamMember.getUser().getNickname())
-                                .match(match)
-                                .build();
-                        return homeTeamMemberRepository.save(homeTeamMember);
-                    })
-                    .toList();
-        }
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        request.getTeamMemberIdList().stream()
+                .flatMap(teamMemberId -> teamMemberRepository.findByIdList(teamMemberId).stream()
+                        .map(teamMember -> {
+                            if(user.getNickname().equals(teamMember.getUser().getNickname())){
+                                CompeteTeamMember homeHostTeamMember = CompeteTeamMember.builder()
+                                        .nickname(teamMember.getUser().getNickname())
+                                        .competeType(CompeteType.HOME_TEAM_HOST)
+                                        .match(match)
+                                        .build();
+                                return competeTeamMemberRepository.save(homeHostTeamMember);
+                            }
+                            CompeteTeamMember homeTeamMember = CompeteTeamMember.builder()
+                                    .nickname(teamMember.getUser().getNickname())
+                                    .competeType(CompeteType.HOME_TEAM)
+                                    .match(match)
+                                    .build();
+                            return competeTeamMemberRepository.save(homeTeamMember);
+                        })
+                ).toList();
 
         AcceptCompete acceptCompete = AcceptCompete.builder()
                 .match(match)
@@ -166,7 +118,14 @@ public class MatchService {
                 .build();
         acceptCompeteRepository.save(acceptCompete);
 
-        List<TeamMemberSimpleResponse> homeTeamMembers = getTeamMemberSimpleResponses(team); // TODO : 수정 예정
+        List<TeamMemberSimpleResponse> homeTeamMembers = request.getTeamMemberIdList().stream()
+                .flatMap(teamMemberId -> {
+                    List<TeamMember> teamMembers = teamMemberRepository.findByIdList(teamMemberId);
+                    return teamMembers.stream()
+                        .map(teamMember -> {
+                            return getTeamMemberSimpleResponse(teamMember);
+                        });
+                }).toList();
 
         return new MatchResponse().toMatchInfoResponse(match, request.getHomeTeamName(), request.getAwayTeamName(), homeTeamMembers);
     }
@@ -175,23 +134,65 @@ public class MatchService {
 
         int matchCount = Math.toIntExact(competeTeamRepository.countByTeamName(team.getTeamName()));
 
-        if(matchCount >= 3) {
+        if(matchCount >= 4) {
             throw new IllegalArgumentException("팀당 경기 생성은 3개까지 가능합니다.");
         }
     }
 
-    public TeamSimpleResponse getTeamInfo(String teamName) {
-
-        Team team = teamRepository.findByName(teamName)
-                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
-
-        String teamImageUrl = "";
-        if(!team.getTeamImages().isEmpty()){
-            URL url = amazonS3Client.getUrl(bucket, team.getTeamImages().get(0).getStoredName());
-            teamImageUrl = url.toString();
+    private void duplicateCheckField(LocalDate matchDate, LocalTime startTime, String fieldName) {
+        if(matchRepository.findByField(matchDate, startTime, fieldName)) {
+            throw new IllegalArgumentException("해당 일정에는 이미 예약된 경기장입니다.");
         }
-
-        return new TeamSimpleResponse().toTeamSimpleInfoResponse(team, teamImageUrl);
     }
 
+    public MatchResponse getAcceptMatchInfo(Long matchId, AcceptTeamMemberRequest request, String email) {
+
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new ApiException(ErrorCode.MATCH_NOT_FOUND));
+
+        match.updateStatus(MatchStatus.RECRUITMENT_ENDS);
+
+        Team homeTeam = competeTeamRepository.findHomeTeamByMatchId(match.getId());
+        Team awayTeam = competeTeamRepository.findAwayTeamByMatchId(match.getId());
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        List<TeamMemberSimpleResponse> awayTeamMembers = request.getTeamMemberIdList().stream()
+                .flatMap(teamMemberId -> {
+                    List<TeamMember> teamMembers = teamMemberRepository.findByIdList(teamMemberId);
+                    return teamMembers.stream()
+                            .map(teamMember -> {
+                                if(user.getNickname().equals(teamMember.getUser().getNickname())){
+                                    CompeteTeamMember awayHostTeamMember = CompeteTeamMember.builder()
+                                            .nickname(teamMember.getUser().getNickname())
+                                            .competeType(CompeteType.AWAY_TEAM_HOST)
+                                            .match(match)
+                                            .build();
+                                    competeTeamMemberRepository.save(awayHostTeamMember);
+
+                                    return getTeamMemberSimpleResponse(teamMember);
+                                }
+                                CompeteTeamMember awayTeamMember = CompeteTeamMember.builder()
+                                        .nickname(teamMember.getUser().getNickname())
+                                        .competeType(CompeteType.AWAY_TEAM)
+                                        .match(match)
+                                        .build();
+                                competeTeamMemberRepository.save(awayTeamMember);
+
+                                return getTeamMemberSimpleResponse(teamMember);
+                            });
+                }).toList();
+
+        AcceptCompete acceptCompete = acceptCompeteRepository.findByMatchId(matchId);
+        acceptCompete.setAcceptTeamMember(teamMemberRepository.findTeamMemberByUserId(user.getId()));
+        acceptCompete.updateStatus(AcceptStatus.ACCEPT);
+
+        return new MatchResponse().toMatchInfoResponse(match, homeTeam.getTeamName(), awayTeam.getTeamName(), awayTeamMembers);
+    }
+
+    private TeamMemberSimpleResponse getTeamMemberSimpleResponse(TeamMember teamMember) {
+        URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
+        String userImageUrl = url.toString();
+        return new TeamMemberSimpleResponse().toTeamMemberSimpleInfoResponse(teamMember, userImageUrl);
+    }
 }

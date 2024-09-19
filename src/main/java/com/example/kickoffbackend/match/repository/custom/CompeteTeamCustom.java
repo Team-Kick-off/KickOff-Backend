@@ -1,4 +1,4 @@
-package com.example.kickoffbackend.match.repository;
+package com.example.kickoffbackend.match.repository.custom;
 
 import com.example.kickoffbackend.match.domain.CompeteTeam;
 import com.example.kickoffbackend.team.domain.Team;

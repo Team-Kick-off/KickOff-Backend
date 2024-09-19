@@ -1,9 +1,9 @@
-package com.example.kickoffbackend.match.repository;
+package com.example.kickoffbackend.match.repository.custom.customImpl;
 
 import com.example.kickoffbackend.common.error.ApiException;
 import com.example.kickoffbackend.common.error.ErrorCode;
-import com.example.kickoffbackend.match.domain.CompeteTeam;
 import com.example.kickoffbackend.match.domain.type.CompeteType;
+import com.example.kickoffbackend.match.repository.custom.CompeteTeamCustom;
 import com.example.kickoffbackend.team.domain.Team;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -12,7 +12,7 @@ import static com.example.kickoffbackend.match.domain.QCompeteTeam.competeTeam;
 import static com.example.kickoffbackend.match.domain.QMatch.match;
 import static com.example.kickoffbackend.team.domain.QTeam.team;
 
-public class CompeteTeamCustomImpl implements CompeteTeamCustom{
+public class CompeteTeamCustomImpl implements CompeteTeamCustom {
 
     JPAQueryFactory queryFactory;
 
@@ -34,7 +34,7 @@ public class CompeteTeamCustomImpl implements CompeteTeamCustom{
                 .from(competeTeam)
                 .join(competeTeam.match, match)
                 .join(competeTeam.team, team)
-                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.HomeTeam)))
+                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.HOME_TEAM)))
                 .fetchOne();
 
         if (homeTeam == null) {
@@ -50,7 +50,7 @@ public class CompeteTeamCustomImpl implements CompeteTeamCustom{
                 .from(competeTeam)
                 .join(competeTeam.match, match)
                 .join(competeTeam.team, team)
-                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.AwayTeam)))
+                .where(competeTeam.match.id.eq(matchId).and(competeTeam.competeType.eq(CompeteType.AWAY_TEAM)))
                 .fetchOne();
     }
 }
