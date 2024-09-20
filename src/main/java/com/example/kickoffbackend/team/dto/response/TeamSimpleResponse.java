@@ -14,28 +14,49 @@ import java.util.List;
 @AllArgsConstructor
 public class TeamSimpleResponse {
 
-    private Long id;
+    private Long homeTeamId;
 
-    private String teamName;
+    private String homeTeamName;
 
-    private String teamImageUrl;
+    private String homeTeamImageUrl;
 
-    private List<TeamMemberSimpleResponse> teamMembers;
+    private List<TeamMemberSimpleResponse> homeTeamMembers;
 
-    public TeamSimpleResponse toTeamSimpleInfoResponse(Team team, String teamImageUrl) {
+    private Long awayTeamId;
+
+    private String awayTeamName;
+
+    private String awayTeamImageUrl;
+
+    private List<TeamMemberSimpleResponse> awayTeamMembers;
+
+    public TeamSimpleResponse toTeamSimpleResponse(Team team, String teamImageUrl) {
         return TeamSimpleResponse.builder()
-                .id(team.getId())
-                .teamName(team.getTeamName())
-                .teamImageUrl(teamImageUrl)
+                .homeTeamId(team.getId())
+                .homeTeamName(team.getTeamName())
+                .homeTeamImageUrl(teamImageUrl)
                 .build();
     }
 
     public TeamSimpleResponse toTeamSimpleResponse(Team team, String teamImageUrl, List<TeamMemberSimpleResponse> teamMembers) {
         return TeamSimpleResponse.builder()
-                .id(team.getId())
-                .teamName(team.getTeamName())
-                .teamImageUrl(teamImageUrl)
-                .teamMembers(teamMembers)
+                .homeTeamId(team.getId())
+                .homeTeamName(team.getTeamName())
+                .homeTeamImageUrl(teamImageUrl)
+                .homeTeamMembers(teamMembers)
+                .build();
+    }
+
+    public TeamSimpleResponse toTeamSimpleResponse(Team homeTeam, String homeTeamImageUrl, List<TeamMemberSimpleResponse> homeTeamMembers, Team awayTeam, String awayTeamImageUrl, List<TeamMemberSimpleResponse> awayTeamMembers) {
+        return TeamSimpleResponse.builder()
+                .homeTeamId(homeTeam.getId())
+                .homeTeamName(homeTeam.getTeamName())
+                .homeTeamImageUrl(homeTeamImageUrl)
+                .homeTeamMembers(homeTeamMembers)
+                .awayTeamId(awayTeam.getId())
+                .awayTeamName(awayTeam.getTeamName())
+                .awayTeamImageUrl(awayTeamImageUrl)
+                .awayTeamMembers(awayTeamMembers)
                 .build();
     }
 }

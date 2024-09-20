@@ -41,7 +41,7 @@ public class MatchResponse {
 
     private List<TeamMemberSimpleResponse> teamMembers;
 
-    public MatchResponse toMatchInfoResponse(Match match, String homeTeamName, String awayTeamName, List<TeamMemberSimpleResponse> teamMembers) {
+    public MatchResponse toMatchResponse(Match match, String homeTeamName, String awayTeamName, List<TeamMemberSimpleResponse> teamMembers) {
         return MatchResponse.builder()
                 .id(match.getId())
                 .matchDate(match.getMatchDate())
@@ -52,6 +52,17 @@ public class MatchResponse {
                 .homeTeamName(homeTeamName)
                 .awayTeamName(awayTeamName)
                 .teamMembers(teamMembers)
+                .build();
+    }
+
+    public MatchResponse toMatchResponse(Match match) {
+        return MatchResponse.builder()
+                .id(match.getId())
+                .matchDate(match.getMatchDate())
+                .startTime(match.getStartTime())
+                .fieldName(match.getFieldName())
+                .gender(match.getGender())
+                .level(match.getLevel())
                 .build();
     }
 }

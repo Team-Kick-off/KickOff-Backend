@@ -10,7 +10,6 @@ import com.example.kickoffbackend.match.domain.type.MatchStatus;
 import com.example.kickoffbackend.match.dto.request.AcceptTeamMemberRequest;
 import com.example.kickoffbackend.match.dto.request.MatchCreateRequest;
 import com.example.kickoffbackend.match.dto.response.MatchResponse;
-import com.example.kickoffbackend.team.dto.response.TeamSimpleResponse;
 import com.example.kickoffbackend.match.repository.*;
 import com.example.kickoffbackend.team.dto.response.TeamMemberSimpleResponse;
 import com.example.kickoffbackend.team.domain.Team;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -127,7 +125,7 @@ public class MatchService {
                         });
                 }).toList();
 
-        return new MatchResponse().toMatchInfoResponse(match, request.getHomeTeamName(), request.getAwayTeamName(), homeTeamMembers);
+        return new MatchResponse().toMatchResponse(match, request.getHomeTeamName(), request.getAwayTeamName(), homeTeamMembers);
     }
 
     private void limitMatchCreate(Team team) {
@@ -152,8 +150,11 @@ public class MatchService {
 
         match.updateStatus(MatchStatus.RECRUITMENT_ENDS);
 
-        Team homeTeam = competeTeamRepository.findHomeTeamByMatchId(match.getId());
-        Team awayTeam = competeTeamRepository.findAwayTeamByMatchId(match.getId());
+        Team homeTeam = competeTeamRepository.findHomeTeamByMatchId(match.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        Team awayTeam = competeTeamRepository.findAwayTeamByMatchId(match.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND_ERROR));
 
@@ -187,12 +188,23 @@ public class MatchService {
         acceptCompete.setAcceptTeamMember(teamMemberRepository.findTeamMemberByUserId(user.getId()));
         acceptCompete.updateStatus(AcceptStatus.ACCEPT);
 
-        return new MatchResponse().toMatchInfoResponse(match, homeTeam.getTeamName(), awayTeam.getTeamName(), awayTeamMembers);
+        return new MatchResponse().toMatchResponse(match, homeTeam.getTeamName(), awayTeam.getTeamName(), awayTeamMembers);
+    }
+
+    public List<MatchResponse> getTeamMatchList(String teamName) {
+
+        Team team = teamRepository.findByName(teamName)
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        List<Match> matchList = competeTeamRepository.findMatchByTeamId(team.getId());
+        return matchList.stream()
+                .map(match -> new MatchResponse().toMatchResponse(match))
+                .toList();
     }
 
     private TeamMemberSimpleResponse getTeamMemberSimpleResponse(TeamMember teamMember) {
         URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
         String userImageUrl = url.toString();
-        return new TeamMemberSimpleResponse().toTeamMemberSimpleInfoResponse(teamMember, userImageUrl);
+        return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl);
     }
 }
