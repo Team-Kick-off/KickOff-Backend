@@ -35,5 +35,8 @@ public class MatchController {
         return CustomApi.OK(matchService.getAcceptMatchInfo(matchId, request, email), "수락 요청 경기의 조회가 완료되었습니다.");
     }
 
-
+    @GetMapping("/{teamName}/matchs")
+    public CustomApi getTeamMatch(@PathVariable("teamName") String teamName) {
+        return CustomApi.OK(matchService.getTeamMatchList(teamName), teamName + "팀의 경기 조회가 완료되었습니다.");
+    }
 }

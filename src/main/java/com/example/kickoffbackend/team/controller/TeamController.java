@@ -103,8 +103,14 @@ public class TeamController {
     }
 
     @GetMapping("/{matchId}/awayTeamMembers")
-    public CustomApi getTeamSimpleInfo(@PathVariable("matchId") Long matchId) {
+    public CustomApi getAwayTeamSimpleInfo(@PathVariable("matchId") Long matchId) {
 
         return CustomApi.OK(teamService.findAwayTeamMemberList(matchId), "Away팀 및 팀원 조회가 완료되었습니다.");
+    }
+
+    @GetMapping("{matchId}/competeTeam")
+    public CustomApi getCompeteTeamSimpleInfo(@PathVariable("matchId") Long matchId) {
+
+        return CustomApi.OK(teamService.findCompeteTeam(matchId), "경기의 주최팀과 상대팀 조회가 완료되었습니다.");
     }
 }

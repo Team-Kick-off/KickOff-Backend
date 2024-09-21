@@ -234,7 +234,7 @@ public class TeamService {
         return teamList.stream()
                 .map(team -> {
                     String teamImageUrl = getTeamImageUrl(team);
-                    return new TeamSimpleResponse().toTeamSimpleInfoResponse(team, teamImageUrl);
+                    return new TeamSimpleResponse().toTeamSimpleResponse(team, teamImageUrl);
                 })
                 .toList();
     }
@@ -257,21 +257,19 @@ public class TeamService {
 
     public List<TeamSimpleResponse> searchAwayTeamList(String teamName) { // 경기 생성_상대팀 검색 조회
 
-        Team team = teamRepository.findByName(teamName)
-                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
-
         List<Team> teamList = teamRepository.findSearchByTeam(teamName);
         return teamList.stream()
                 .map(awayTeam -> {
                     String teamImageUrl = getTeamImageUrl(awayTeam);
-                    return new TeamSimpleResponse().toTeamSimpleInfoResponse(awayTeam, teamImageUrl);
+                    return new TeamSimpleResponse().toTeamSimpleResponse(awayTeam, teamImageUrl);
                 })
                 .toList();
     }
 
     public TeamSimpleResponse findAwayTeamMemberList(Long matchId) {
 
-        Team team = competeTeamRepository.findAwayTeamByMatchId(matchId);
+        Team team = competeTeamRepository.findAwayTeamByMatchId(matchId)
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
 
         String teamImageUrl = getTeamImageUrl(team);
 
@@ -282,6 +280,37 @@ public class TeamService {
                 .toList();
 
         return new TeamSimpleResponse().toTeamSimpleResponse(team, teamImageUrl, teamMembers);
+    }
+
+    public TeamSimpleResponse findCompeteTeam(Long matchId) { // 팀 운영 관리_선택한 경기의 주최팀과 상대팀 조회
+
+        Team homeTeam = competeTeamRepository.findHomeTeamByMatchId(matchId)
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        String homeTeamImageUrl = getTeamImageUrl(homeTeam);
+
+        List<TeamMemberSimpleResponse> homeTeamMembers = homeTeam.getTeamMembers().stream()
+                .map(teamMember -> {
+                    URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
+                    String userImageUrl = url.toString();
+                    return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl, teamMember.getRole());
+                })
+                .toList();
+
+        Team awayTeam = competeTeamRepository.findAwayTeamByMatchId(matchId)
+                .orElseThrow(() -> new ApiException(ErrorCode.TEAM_NOT_FOUND));
+
+        String awayTeamImageUrl = getTeamImageUrl(awayTeam);
+
+        List<TeamMemberSimpleResponse> awayTeamMembers = awayTeam.getTeamMembers().stream()
+                .map(teamMember -> {
+                    URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
+                    String userImageUrl = url.toString();
+                    return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl, teamMember.getRole());
+                })
+                .toList();
+
+        return new TeamSimpleResponse().toTeamSimpleResponse(homeTeam, homeTeamImageUrl, homeTeamMembers, awayTeam, awayTeamImageUrl, awayTeamMembers);
     }
 
     private String getTeamImageUrl(Team team) {
@@ -296,6 +325,6 @@ public class TeamService {
     private TeamMemberSimpleResponse getTeamMemberSimpleResponse(TeamMember teamMember) {
         URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
         String userImageUrl = url.toString();
-        return new TeamMemberSimpleResponse().toTeamMemberSimpleInfoResponse(teamMember, userImageUrl);
+        return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl);
     }
 }
