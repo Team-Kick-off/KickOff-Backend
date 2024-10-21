@@ -293,7 +293,7 @@ public class TeamService {
                 .map(teamMember -> {
                     URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
                     String userImageUrl = url.toString();
-                    return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl);
+                    return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl, teamMember.getRole());
                 })
                 .toList();
 
@@ -306,7 +306,7 @@ public class TeamService {
                 .map(teamMember -> {
                     URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
                     String userImageUrl = url.toString();
-                    return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl);
+                    return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl, teamMember.getRole());
                 })
                 .toList();
 
@@ -325,6 +325,6 @@ public class TeamService {
     private TeamMemberSimpleResponse getTeamMemberSimpleResponse(TeamMember teamMember) {
         URL url = amazonS3Client.getUrl(bucket, "기본이미지.png");
         String userImageUrl = url.toString();
-        return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl);
+        return new TeamMemberSimpleResponse().toTeamMemberSimpleResponse(teamMember, userImageUrl, teamMember.getRole());
     }
 }

@@ -21,12 +21,12 @@ public class TeamMemberSimpleResponse {
 
     private Role role;
 
-    public static TeamMemberSimpleResponse toTeamMemberSimpleResponse(TeamMember teamMember, String userImageUrl) {
+    public static TeamMemberSimpleResponse toTeamMemberSimpleResponse(TeamMember teamMember, String userImageUrl, Role role) {
         return TeamMemberSimpleResponse.builder()
                 .id(teamMember.getId())
                 .teamMemberNickname(teamMember.getUser().getNickname())
                 .teamMemberImageUrl(userImageUrl)
-                .role(teamMember.getRole())
+                .role(role)
                 .build();
     }
 }
